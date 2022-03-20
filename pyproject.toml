@@ -1,0 +1,28 @@
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+default_section = "THIRDPARTY"
+known_first_party = ["lifter-api-wrapper"]
+known_third_party = ["pytest", "requests", "setuptools"]
+
+[tool.pylint.MESSAGE_CONTROL]
+disable = """
+    line-too-long,
+    abstract-method,
+    no-member,
+    """
+enable = "useless-suppression"
+
+[tool.pylint.REPORTS]
+reports = 'no'
+
+[tool.pylint.FORMAT]
+max-line-length = "88"
+
+[tool.pylint.BASIC]
+good-names = "_,i,e,setUp,tearDown,maxDiff"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?%'
