@@ -5,6 +5,7 @@ COMPETITION_FIELDS = ["date_start", "date_end", "location", "competition_name"]
 LIFT_FIELDS = [
     "athlete",
     "competition",
+    "session",
     "snatch_first",
     "snatch_first_weight",
     "snatch_second",
@@ -21,6 +22,16 @@ LIFT_FIELDS = [
     "weight_category",
     "team",
     "lottery_number",
-    "session_number",
+]
+SESSION_FIELD = [
     "session_datetime",
+    "competition",
+    "announcer",
+    "referee_first",
+    "referee_second",
+    "referee_third",
+    "technical_controller",
+    "marshall",
+    "timekeeper",
+    "jury",
 ]

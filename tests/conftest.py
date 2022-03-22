@@ -66,6 +66,27 @@ def mock_altered_competition():
 
 
 @pytest.fixture(scope="class")
+def mock_session():
+    session = {
+        "session_datetime": "2022-03-05T07:48:11Z",
+        "referee_first": "Referee 1",
+        "referee_second": "Referee 2",
+        "referee_third": "Referee 3",
+        "technical_controller": "TC",
+        "marshall": "Marshall",
+        "timekeeper": "TK",
+        "jury": "Jury",
+    }
+    return session
+
+
+@pytest.fixture(scope="class")
+def mock_altered_session():
+    altered_session = {"referee_first": "altered"}
+    return altered_session
+
+
+@pytest.fixture(scope="class")
 def mock_lift():
     lift = {
         "snatch_first": "LIFT",
@@ -84,8 +105,6 @@ def mock_lift():
         "weight_category": "M102+",
         "team": "CCW",
         "lottery_number": 1,
-        "session_number": 1,
-        "session_datetime": "2022-03-06T08:22:40Z",
     }
     return lift
 
@@ -97,20 +116,19 @@ def mock_altered_lift():
 
 
 @pytest.fixture(scope="class")
-def mock_data(mock_athlete, mock_competition, mock_lift):
+def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
     # authenticate
     auth_token = os.getenv("API_TOKEN")
     access_token = None
 
     # collect current athlete and competitions ids before set up so can delete newly created items of database and then delete new ones on tear down
-    pretest_athletes = [
-        athlete["reference_id"]
-        for athlete in requests.get(f"{URL}/{VERSION}/athletes").json()
-    ]
-    pretest_competitions = [
-        competition["reference_id"]
-        for competition in requests.get(f"{URL}/{VERSION}/competitions").json()
-    ]
+    athletes_response = requests.get(f"{URL}/{VERSION}/athletes").json()
+    athletes = athletes_response["results"]
+    pretest_athletes = [athlete["reference_id"] for athlete in athletes]
+
+    competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
+    competitions = competitions_response["results"]
+    pretest_competitions = [competition["reference_id"] for competition in competitions]
 
     logging.debug("=== Verifying Token ===")
 
@@ -141,7 +159,7 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
         return access_token
 
     # set up
-    logger.info("===Mock Data Set Up===")
+    logging.info("===Mock Data Set Up===")
     athlete = requests.post(
         f"{URL}/{VERSION}/athletes",
         headers={"authorization": f"Bearer {obtain_access_token()}"},
@@ -153,32 +171,44 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
         json=mock_competition,
     ).json()
 
+    mock_session["competition"] = competition["reference_id"]
+    session = requests.post(
+        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions",
+        headers={"authorization": f"Bearer {obtain_access_token()}"},
+        json=mock_session,
+    ).json()
+
     # foreign key relationships
     mock_lift["athlete"] = athlete["reference_id"]
     mock_lift["competition"] = competition["reference_id"]
+    mock_lift["session"] = session["reference_id"]
+
     lift = requests.post(
-        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/lift",
+        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions/{session['reference_id']}/lifts",
         headers={"authorization": f"Bearer {obtain_access_token()}"},
         json=mock_lift,
     ).json()
 
-    logger.info("...Set Up completed.")
+    logging.error(lift)
+    logging.info("...Set Up completed.")
     _mocked_data = {
         "athlete_id": athlete["reference_id"],
         "competition_id": competition["reference_id"],
+        "session_id": session["reference_id"],
         "lift_id": lift["reference_id"],
         "pretest_athletes_number": len(pretest_athletes),
         "pretest_competitions_number": len(pretest_competitions),
     }
     yield _mocked_data
 
-    posttest_athletes = [
-        athlete["reference_id"]
-        for athlete in requests.get(f"{URL}/{VERSION}/athletes").json()
-    ]
+    post_athletes_response = requests.get(f"{URL}/{VERSION}/athletes").json()
+    post_athletes = post_athletes_response["results"]
+    posttest_athletes = [athlete["reference_id"] for athlete in post_athletes]
+
+    post_competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
+    post_competitions = post_competitions_response["results"]
     posttest_competitions = [
-        competition["reference_id"]
-        for competition in requests.get(f"{URL}/{VERSION}/competitions").json()
+        competition["reference_id"] for competition in post_competitions
     ]
 
     new_athletes = [

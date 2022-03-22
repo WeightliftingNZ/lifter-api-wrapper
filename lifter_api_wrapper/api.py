@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 import requests
 
@@ -9,7 +8,7 @@ from .exceptions import (
     TokenNotProvidedError,
     TokenNotValidError,
 )
-from .mixins import AthleteMixin, CompetitionMixin, LiftMixin
+from .mixins import AthleteMixin, CompetitionMixin, LiftMixin, SessionMixin
 
 logging.basicConfig(
     level=logging.DEBUG, format=" %(asctime)s - %(levelname)s - %(message)s"
@@ -97,7 +96,7 @@ class BaseLifterAPI:
             raise MissingOrExtraValuesError(message=f"{unknown_keys=}")
 
 
-class LifterAPI(BaseLifterAPI, AthleteMixin, CompetitionMixin, LiftMixin):
+class LifterAPI(BaseLifterAPI, AthleteMixin, CompetitionMixin, LiftMixin, SessionMixin):
     """
     API for Lifter
 

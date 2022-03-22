@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 import requests
 
 from ..defaults import ATHLETE_FIELDS
@@ -18,7 +16,7 @@ class AthleteMixin:
             NotAllowedError: some error
 
         Returns:
-            List[Dict[str, str]]: List of athletes
+            list[dict[str, str]]: List of athletes
         """
         response = requests.get(f"{self.url}/{self.version}/athletes")
         if response.status_code == 200:

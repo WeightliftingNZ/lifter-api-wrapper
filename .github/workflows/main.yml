@@ -2,30 +2,15 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     pull_request:
-      branches: [ main ]
+      branches: [main]
 
 jobs:
   build:
     name: Build app and run tests
     runs-on: ubuntu-latest
     services:
-      db:
-        image: postgres:latest
-        env:
-          POSTGRES_NAME: example_db
-          POSTGRES_USER: example_db
-          POSTGRES_PASSWORD: pword
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: 5432
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,7 +18,7 @@ jobs:
       - name: Install Python, Pipenv and Pipfile packages
         uses: palewire/install-python-pipenv-pipfile@v2
         with:
-          python-version: 3.8
+          python-version: 3.10
 
       - name: Lint code
         uses: py-actions/flake8@v1
@@ -49,5 +34,5 @@ jobs:
           pipenv run pytest -vv
 
       - name: Build successful
-        run: | 
+        run: |
           echo Build is successful
