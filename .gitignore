@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!docs/build
 develop-eggs/
 dist/
 downloads/
@@ -130,10 +131,13 @@ dmypy.json
 
 # vim
 *.swp
-*.swo  
+*.swo
 
 # vscode
 .vscode
 
 # ansible
 ansible.log
+
+# pypi
+.pypirc
