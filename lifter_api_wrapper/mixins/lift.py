@@ -1,11 +1,14 @@
 import requests
 
-from ..defaults import LIFT_FIELDS
-from ..exceptions import NotAllowedError
+from ..utils.defaults import LIFT_FIELDS
+from ..utils.exceptions import NotAllowedError
+from ..utils.types import LiftSet
 
 
 class LiftMixin:
-    def lifts(self, competition_id: str, session_id: str) -> list[dict[str, str]]:
+    def lifts(
+        self, competition_id: str, session_id: str
+    ) -> dict[str : str | int | LiftSet]:
         """Provides a lifts for a given competition and session
 
         Args:
@@ -16,7 +19,7 @@ class LiftMixin:
             NotAllowedError: some error?
 
         Returns:
-            dict[dict[str, str|list[]]]: a list of lifts
+            dict[str: str | int | LiftSet]: lift data plus pagination information
         """
         response = requests.get(
             f"{self.url}/{self.version}/competitions/{competition_id}/sessions/{session_id}/lifts"
@@ -54,7 +57,16 @@ class LiftMixin:
             self.get_competition(competition_id).get("detail")
             == "Competition does not exist."
         ):
-            return self.get_competition(competition_id)
+            return self.get_competition(competition_id=competition_id)
+        elif (
+            self.get_session(competition_id=competition_id, session_id=session_id).get(
+                "detail"
+            )
+            == "Session does not exist."
+        ):
+            return self.get_session(
+                competition_id=competition_id, session_id=session_id
+            )
         else:
             raise NotAllowedError(
                 message=f"status code returned: {response.status_code}"
@@ -76,6 +88,13 @@ class LiftMixin:
             == "Competition does not exist."
         ):
             return self.get_competition(competition_id)
+        elif (
+            self.get_session(competition_id=competition_id, session_id=session_id)
+            == "Session does not exist."
+        ):
+            return self.get_session(
+                competition_id=competition_id, session_id=session_id
+            )
         else:
             raise NotAllowedError(
                 message=f"status code returned: {response.status_code}"

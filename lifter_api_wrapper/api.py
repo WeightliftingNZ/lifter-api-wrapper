@@ -2,13 +2,13 @@ import logging
 
 import requests
 
-from .defaults import URL, VERSION
-from .exceptions import (
+from .mixins import AthleteMixin, CompetitionMixin, LiftMixin, SessionMixin
+from .utils.defaults import URL, VERSION
+from .utils.exceptions import (
     MissingOrExtraValuesError,
     TokenNotProvidedError,
     TokenNotValidError,
 )
-from .mixins import AthleteMixin, CompetitionMixin, LiftMixin, SessionMixin
 
 logging.basicConfig(
     level=logging.DEBUG, format=" %(asctime)s - %(levelname)s - %(message)s"
@@ -50,8 +50,6 @@ class BaseLifterAPI:
         Returns:
             str: Access token
         """
-        # TODO: introduce async may need to try multiple times
-        # TODO: introduce async
 
         if not self.__verify_access_token():
             response = requests.post(

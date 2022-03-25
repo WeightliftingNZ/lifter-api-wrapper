@@ -1,13 +1,13 @@
 import requests
 
-from ..defaults import COMPETITION_FIELDS
-from ..exceptions import NotAllowedError
+from ..utils.defaults import COMPETITION_FIELDS
+from ..utils.exceptions import NotAllowedError
 
 # TODO: write docstrings
 
 
 class CompetitionMixin:
-    """Competition API code lives here"""
+    """Competition API methods"""
 
     def competitions(self) -> list[dict[str, str]]:
         response = requests.get(f"{self.url}/{self.version}/competitions")

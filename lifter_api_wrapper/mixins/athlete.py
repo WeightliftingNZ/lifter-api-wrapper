@@ -1,24 +1,41 @@
 import requests
 
-from ..defaults import ATHLETE_FIELDS
-from ..exceptions import NotAllowedError
-
-# TODO: write docstrings
+from ..utils.defaults import ATHLETE_FIELDS
+from ..utils.exceptions import NotAllowedError
 
 
 class AthleteMixin:
     """Contains all code for athlete API"""
 
-    def athletes(self) -> list[dict[str, str]]:
+    # TODO: what to do about pagination?
+    def athletes(self) -> dict[str : str | list[dict[str, str]]]:
         """Lists all athletes
 
         Raises:
             NotAllowedError: some error
 
         Returns:
-            list[dict[str, str]]: List of athletes
+            dict[str: str | list[dict[str, str]]]: List of athletes
         """
         response = requests.get(f"{self.url}/{self.version}/athletes")
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise NotAllowedError(
+                message=f"status code returned: {response.status_code}"
+            )
+
+    def find_athlete(
+        self, search: str, ordering: str = "last_name", ascending: bool = True
+    ) -> dict[str : str | dict[str, str]]:
+        if ordering in ["last_name", "first_name"]:
+            response = requests.get(
+                f"{self.url}/{self.version}/athletes?ordering={'' if ascending else '-'}{ordering}&search={search}"
+            )
+        else:
+            raise NotAllowedError(
+                message=f"'{ordering}' not a correcting argument. 'last_name' and 'first_name'"
+            )
         if response.status_code == 200:
             return response.json()
         else:

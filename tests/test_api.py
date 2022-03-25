@@ -1,6 +1,8 @@
+from email.quoprimime import unquote
+
 import pytest
 
-from lifter_api_wrapper.exceptions import (
+from lifter_api_wrapper.utils.exceptions import (
     MissingOrExtraValuesError,
     TokenNotProvidedError,
 )
@@ -17,6 +19,17 @@ class TestLifterAPIAthlete:
         """Able to return athlete detail based on ID"""
         athlete_details = unauthenticated_api_user.get_athlete(mock_data["athlete_id"])
         assert athlete_details["yearborn"] == mock_athlete["yearborn"]
+
+    def test_find_athlete(self, mock_athlete, unauthenticated_api_user):
+        """Able to search for an athlete"""
+        athlete_search = unauthenticated_api_user.find_athlete(
+            mock_athlete["first_name"] + " " + mock_athlete["last_name"]
+        )
+        assert athlete_search["count"] > 0
+        athlete_first_name = [
+            athlete["first_name"] for athlete in athlete_search["results"]
+        ]
+        assert mock_athlete["first_name"] in athlete_first_name
 
     def test_create_athlete_unauthenticated(
         self, mock_athlete, unauthenticated_api_user
@@ -87,7 +100,7 @@ class TestLifterAPICompetition:
     def test_competitions(self, mock_data, unauthenticated_api_user):
         """Able to list all competitions"""
         competitions = unauthenticated_api_user.competitions()
-        assert len(competitions) == mock_data["pretest_competitions_number"] + 2
+        assert competitions["count"] == mock_data["pretest_competitions_number"] + 1
 
     def test_get_competition(
         self,
@@ -180,34 +193,52 @@ class TestLifterAPICompetition:
 class TestLifterAPISession:
     # TODO: Write Session tests
 
-    def test_sessions(self):
+    def test_sessions(self, unauthenticated_api_user, mock_data, mock_session):
         """Provides session for a competition"""
-        pass
+        sessions = unauthenticated_api_user.sessions(
+            competition_id=mock_data["competition_id"],
+        )
+        assert sessions["count"] == 1
+        assert sessions["results"][0]["referee_first"] == mock_session["referee_first"]
 
-    def test_get_session(self):
+    def test_get_session(self, unauthenticated_api_user, mock_data, mock_session):
         """Provides detail of session plus lifts for the session"""
-        pass
+        session = unauthenticated_api_user.get_session(
+            competition_id=mock_data["competition_id"],
+            session_id=mock_data["session_id"],
+        )
+        assert session["referee_first"] == mock_session["referee_first"]
 
-    @pytest.mark.skip(reason="I need to write this")
-    def test_create_session_unauthenticated(self):
-        """Unable to create session data as unauthenticated and will return exception as no auth_token provided"""
-        pass
-
-    @pytest.mark.skip(reason="I need to write this")
-    def test_edit_session_unauthenticated(self, unauthenticated_api_user):
-        """Unable to edit session data as unauthenticated and will return exception as no auth_token provided"""
-        pass
-
-    @pytest.mark.skip(reason="I need to write this")
-    def test_delete_session_unauthenticated(
-        self, unauthenticated_api_user, mock_lift, mock_data
+    def test_create_session_unauthenticated(
+        self, unauthenticated_api_user, mock_data, mock_session
     ):
+        """Unable to create session data as unauthenticated and will return exception as no auth_token provided"""
+        mock_data["competition"] = mock_data["competition_id"]
+        with pytest.raises(TokenNotProvidedError) as excinfo:
+            unauthenticated_api_user.create_session(
+                competition_id=mock_data["competition_id"], **mock_session
+            )
+        assert "error" in str(excinfo.value)
+
+    def test_edit_session_unauthenticated(
+        self, unauthenticated_api_user, mock_data, mock_altered_session
+    ):
+        """Unable to edit session data as unauthenticated and will return exception as no auth_token provided"""
+        mock_data["competition"] = mock_data["competition_id"]
+        with pytest.raises(TokenNotProvidedError) as excinfo:
+            unauthenticated_api_user.edit_session(
+                competition_id=mock_data["competition_id"],
+                session_id=mock_data["session_id"],
+                **mock_altered_session
+            )
+        assert "error" in str(excinfo.value)
+
+    def test_delete_session_unauthenticated(self, unauthenticated_api_user, mock_data):
         """Unable to delete session data as unauthenticated and will return exception as no auth_token provided"""
         with pytest.raises(TokenNotProvidedError) as excinfo:
-            mock_lift["session"] = mock_data["session_id"]
-            unauthenticated_api_user.delete_lift(
+            unauthenticated_api_user.delete_session(
                 competition_id=mock_data["competition_id"],
-                lift_id=mock_data["lift_id"],
+                session_id=mock_data["session_id"],
             )
         assert "error" in str(excinfo.value)
 
@@ -217,40 +248,39 @@ class TestLifterAPISession:
         ...
 
     def test_create_edit_delete_session_authenticated(
-        self, authenticated_api_user, mock_lift, mock_altered_lift, mock_data
+        self, authenticated_api_user, mock_session, mock_altered_session, mock_data
     ):
         """Able to create, edit and delete a competition using an authenticated user"""
-        # creating lift_data
-        mock_lift["athlete"] = mock_data["athlete_id"]
-        mock_lift["competition"] = mock_data["competition_id"]
-        create_lift = authenticated_api_user.create_lift(
-            competition_id=mock_data["competition_id"], **mock_lift
+        # creating session data
+        mock_session["competition"] = mock_data["competition_id"]
+        create_session = authenticated_api_user.create_session(
+            competition_id=mock_data["competition_id"], **mock_session
         )
-        lift_id = create_lift["reference_id"]
-        created_lift = authenticated_api_user.get_lift(
-            competition_id=mock_data["competition_id"], lift_id=lift_id
+        session_id = create_session["reference_id"]
+        created_session = authenticated_api_user.get_session(
+            competition_id=mock_data["competition_id"], session_id=session_id
         )
-        assert created_lift["bodyweight"] == mock_lift["bodyweight"]
+        assert created_session["referee_first"] == mock_session["referee_first"]
 
         # editing athlete
-        authenticated_api_user.edit_lift(
+        authenticated_api_user.edit_session(
             competition_id=mock_data["competition_id"],
-            lift_id=lift_id,
-            **mock_altered_lift
+            session_id=session_id,
+            **mock_altered_session
         )
-        edited_lift = authenticated_api_user.get_lift(
-            competition_id=mock_data["competition_id"], lift_id=lift_id
+        edited_session = authenticated_api_user.get_session(
+            competition_id=mock_data["competition_id"], session_id=session_id
         )
-        assert edited_lift["bodyweight"] == mock_altered_lift["bodyweight"]
+        assert edited_session["referee_first"] == mock_altered_session["referee_first"]
 
         # deleting athlete
-        authenticated_api_user.delete_lift(
-            competition_id=mock_data["competition_id"], lift_id=lift_id
+        authenticated_api_user.delete_session(
+            competition_id=mock_data["competition_id"], session_id=session_id
         )
-        deleted_competition = authenticated_api_user.get_lift(
-            competition_id=mock_data["competition_id"], lift_id=lift_id
+        deleted_competition = authenticated_api_user.get_session(
+            competition_id=mock_data["competition_id"], session_id=session_id
         )
-        assert deleted_competition.get("detail") == "Lift does not exist."
+        assert deleted_competition.get("detail") == "Session does not exist."
 
 
 @pytest.mark.usefixtures("mock_data")
@@ -323,8 +353,14 @@ class TestLifterAPILift:
         """Able to create, edit and delete a competition using an authenticated user"""
         # creating lift_data
         mock_lift["athlete"] = mock_data["athlete_id"]
-        mock_lift["competition"] = mock_data["competition_id"]
-        mock_lift["session"] = mock_data["session_id"]
+
+        # need to delete lift because cannot have another lift created
+        authenticated_api_user.delete_lift(
+            competition_id=mock_data["competition_id"],
+            session_id=mock_data["session_id"],
+            lift_id=mock_data["lift_id"],
+        )
+
         create_lift = authenticated_api_user.create_lift(
             competition_id=mock_data["competition_id"],
             session_id=mock_data["session_id"],
@@ -370,13 +406,13 @@ class TestLifterAPILift:
     ):
         """Ensures an error messgae is given when the wrong fields are supplied. This should also work for the edit method"""
         mock_lift["unknown"] = "fake"
-        mock_lift.pop("competition", None)
+        mock_lift.pop("session", None)
         with pytest.raises(MissingOrExtraValuesError) as excinfo:
             authenticated_api_user.create_lift(
                 competition_id=mock_data["competition_id"],
                 session_id=mock_data["session_id"],
                 **mock_lift
             )
-        assert "unknown_keys=['unknown']\nmissing_keys=['competition']" in str(
+        assert "unknown_keys=['unknown']\nmissing_keys=['session']" in str(
             excinfo.value
         )

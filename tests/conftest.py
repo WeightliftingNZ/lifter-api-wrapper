@@ -5,7 +5,7 @@ import pytest
 import requests
 
 from lifter_api_wrapper import LifterAPI
-from lifter_api_wrapper.defaults import URL, VERSION
+from lifter_api_wrapper.utils.defaults import URL, VERSION
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -72,6 +72,7 @@ def mock_session():
         "referee_first": "Referee 1",
         "referee_second": "Referee 2",
         "referee_third": "Referee 3",
+        "announcer": "Announcer",
         "technical_controller": "TC",
         "marshall": "Marshall",
         "timekeeper": "TK",
@@ -180,7 +181,6 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
 
     # foreign key relationships
     mock_lift["athlete"] = athlete["reference_id"]
-    mock_lift["competition"] = competition["reference_id"]
     mock_lift["session"] = session["reference_id"]
 
     lift = requests.post(
@@ -189,7 +189,6 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
         json=mock_lift,
     ).json()
 
-    logging.error(lift)
     logging.info("...Set Up completed.")
     _mocked_data = {
         "athlete_id": athlete["reference_id"],
