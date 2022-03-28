@@ -1,3 +1,5 @@
+"""LifterAPI setup.py"""
+
 import pathlib
 
 from setuptools import setup
@@ -16,7 +18,7 @@ setup(
     author="Shivan Sivakumaran",
     author_email="shivan.sivakumaran@gmail.com",
     license="MIT",
-    packages=["lifter-api-wrapper"],
+    packages=["lifter_api_wrapper"],
     install_requires=[
         "requests",
     ],
