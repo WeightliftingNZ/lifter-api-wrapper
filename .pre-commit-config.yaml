@@ -25,13 +25,17 @@ repos:
       - id: bandit
         args: ["-iii", "-ll"]
 
-  - repo: https://github.com/pycqa/pylint
-    rev: "v2.13.0"
+  - repo: local
     hooks:
       - id: pylint
+        name: pylint
+        entry: pipenv run pylint
+        language: system
+        types: [python]
+        require_serial: true
 
   - repo: https://github.com/ambv/black
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
       - id: black
         args: [--line-length=88]
@@ -53,6 +57,7 @@ repos:
     rev: v0.942
     hooks:
       - id: mypy
+        additional_dependencies: ["types-requests"]
 
   - repo: https://github.com/asottile/seed-isort-config
     rev: v2.2.0

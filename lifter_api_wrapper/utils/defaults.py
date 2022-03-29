@@ -1,10 +1,25 @@
+"""All the defaults"""
+
+# used for the url for the API
 URL = "http://0.0.0.0:8000"
 VERSION = "v1"
+
+# field required for creation/deletion
 ATHLETE_FIELDS = ["first_name", "last_name", "yearborn"]
 COMPETITION_FIELDS = ["date_start", "date_end", "location", "competition_name"]
+SESSION_FIELDS = [
+    "session_datetime",
+    "announcer",
+    "referee_first",
+    "referee_second",
+    "referee_third",
+    "technical_controller",
+    "marshall",
+    "timekeeper",
+    "jury",
+]
 LIFT_FIELDS = [
     "athlete",
-    "session",
     "snatch_first",
     "snatch_first_weight",
     "snatch_second",
@@ -21,16 +36,4 @@ LIFT_FIELDS = [
     "weight_category",
     "team",
     "lottery_number",
-]
-SESSION_FIELDS = [
-    "session_datetime",
-    "competition",
-    "announcer",
-    "referee_first",
-    "referee_second",
-    "referee_third",
-    "technical_controller",
-    "marshall",
-    "timekeeper",
-    "jury",
 ]
