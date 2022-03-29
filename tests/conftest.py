@@ -1,3 +1,4 @@
+"""conftest.py - contains all the fixtures and test cases"""
 import logging
 import os
 
@@ -12,24 +13,30 @@ logging.basicConfig(
     format=" %(asctime)s - %(levelname)s - %(message)s",
 )
 
+# pylint: disable=R0914,R0915,W0621
+
 
 @pytest.fixture(scope="class")
 def unauthenticated_api_user():
+    """Unauthenticated user."""
     return LifterAPI()
 
 
 @pytest.fixture(scope="class")
 def wrongtoken_api_user():
+    """User with wrong API key."""
     return LifterAPI(auth_token="WrongKey")
 
 
 @pytest.fixture(scope="class")
 def authenticated_api_user():
+    """User that is authenticated."""
     return LifterAPI(auth_token=os.getenv("API_TOKEN"))
 
 
 @pytest.fixture(scope="class")
 def mock_athlete():
+    """Mock athlete"""
     athlete = {
         "first_name": "Test",
         "last_name": "USER",
@@ -40,6 +47,7 @@ def mock_athlete():
 
 @pytest.fixture(scope="class")
 def mock_altered_athlete():
+    """To test editing athlete"""
     change = {
         "yearborn": 1901,
     }
@@ -48,6 +56,7 @@ def mock_altered_athlete():
 
 @pytest.fixture(scope="class")
 def mock_competition():
+    """Mock competition"""
     competition = {
         "date_start": "2022-03-05",
         "date_end": "2022-03-06",
@@ -59,6 +68,7 @@ def mock_competition():
 
 @pytest.fixture(scope="class")
 def mock_altered_competition():
+    """To test editing competition."""
     change = {
         "location": "Test Location Changed",
     }
@@ -67,6 +77,7 @@ def mock_altered_competition():
 
 @pytest.fixture(scope="class")
 def mock_session():
+    """Mock session."""
     session = {
         "session_datetime": "2022-03-05T07:48:11Z",
         "referee_first": "Referee 1",
@@ -83,12 +94,14 @@ def mock_session():
 
 @pytest.fixture(scope="class")
 def mock_altered_session():
+    """To test editing a session."""
     altered_session = {"referee_first": "altered"}
     return altered_session
 
 
 @pytest.fixture(scope="class")
 def mock_lift():
+    """Mock lift"""
     lift = {
         "snatch_first": "LIFT",
         "snatch_first_weight": 120,
@@ -112,41 +125,62 @@ def mock_lift():
 
 @pytest.fixture(scope="class")
 def mock_altered_lift():
+    """To test editing a lift"""
     change = {"bodyweight": 87}
     return change
 
 
 @pytest.fixture(scope="class")
 def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
+    """Mock data"""
     # authenticate
     auth_token = os.getenv("API_TOKEN")
     access_token = None
+
+    def _step_through_pagination(next_page: str, item_list: list) -> list:
+        """steps through pagination"""
+        while next_page is not None:
+            response = requests.get(next_page).json()
+            items = response["results"]
+            item_list.extend([item["reference_id"] for item in items])
+            next_page = response["next"]
+        return item_list
 
     # collect current athlete and competitions ids before set up so can delete newly created items of database and then delete new ones on tear down
     athletes_response = requests.get(f"{URL}/{VERSION}/athletes").json()
     athletes = athletes_response["results"]
     pretest_athletes = [athlete["reference_id"] for athlete in athletes]
+    # stepping through for pagination
+    pretest_athletes = _step_through_pagination(
+        athletes_response["next"], pretest_athletes
+    )
 
     competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
     competitions = competitions_response["results"]
     pretest_competitions = [competition["reference_id"] for competition in competitions]
+    # setting through pagination
+    pretest_competitions = _step_through_pagination(
+        competitions_response["next"], pretest_competitions
+    )
 
     logging.debug("=== Verifying Token ===")
 
-    def verify_access_token():
-        if access_token == None:
+    def _verify_access_token():
+        """Verify token"""
+        if access_token is None:
             return False
         response = requests.post(
             f"{URL}/api/token/verify", json={"token": access_token}
         )
         return response.json().get("code") != "token_not_valid"
 
-    def obtain_access_token():
+    def _obtain_access_token():
+        """Obtain a token"""
         if auth_token is None:
             raise Exception(
                 message="No token supplied in .env file. Ensure token is saved as API_TOKEN=<API TOKEN>"
             )
-        if verify_access_token() == False:
+        if not _verify_access_token():
             response = requests.post(
                 f"{URL}/api/token/refresh/",
                 data={"refresh": f"{auth_token}"},
@@ -163,21 +197,22 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
     logging.info("===Mock Data Set Up===")
     athlete = requests.post(
         f"{URL}/{VERSION}/athletes",
-        headers={"authorization": f"Bearer {obtain_access_token()}"},
+        headers={"authorization": f"Bearer {_obtain_access_token()}"},
         json=mock_athlete,
     ).json()
     competition = requests.post(
         f"{URL}/{VERSION}/competitions",
-        headers={"authorization": f"Bearer {obtain_access_token()}"},
+        headers={"authorization": f"Bearer {_obtain_access_token()}"},
         json=mock_competition,
     ).json()
 
     mock_session["competition"] = competition["reference_id"]
     session = requests.post(
         f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions",
-        headers={"authorization": f"Bearer {obtain_access_token()}"},
+        headers={"authorization": f"Bearer {_obtain_access_token()}"},
         json=mock_session,
     ).json()
+    mock_session.pop("competition", None)
 
     # foreign key relationships
     mock_lift["athlete"] = athlete["reference_id"]
@@ -185,9 +220,12 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
 
     lift = requests.post(
         f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions/{session['reference_id']}/lifts",
-        headers={"authorization": f"Bearer {obtain_access_token()}"},
+        headers={"authorization": f"Bearer {_obtain_access_token()}"},
         json=mock_lift,
     ).json()
+
+    mock_lift.pop("athlete", None)
+    mock_lift.pop("session", None)
 
     logging.info("...Set Up completed.")
     _mocked_data = {
@@ -203,12 +241,18 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
     post_athletes_response = requests.get(f"{URL}/{VERSION}/athletes").json()
     post_athletes = post_athletes_response["results"]
     posttest_athletes = [athlete["reference_id"] for athlete in post_athletes]
+    posttest_athletes = _step_through_pagination(
+        post_athletes_response["next"], posttest_athletes
+    )
 
     post_competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
     post_competitions = post_competitions_response["results"]
     posttest_competitions = [
         competition["reference_id"] for competition in post_competitions
     ]
+    posttest_competitions = _step_through_pagination(
+        post_competitions_response["next"], posttest_competitions
+    )
 
     new_athletes = [
         athlete for athlete in posttest_athletes if athlete not in pretest_athletes
@@ -221,17 +265,16 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
 
     # tear down n.b. lift should be deleted if competitions and athletes are deleted too
     # no .json() on requests.delete()
-    # TODO: could be async?
     logging.info("===Mock Data Tear Down Started===")
     for athlete in new_athletes:
         requests.delete(
             f"{URL}/{VERSION}/athletes/{athlete}",
-            headers={"authorization": f"Bearer {obtain_access_token()}"},
+            headers={"authorization": f"Bearer {_obtain_access_token()}"},
         )
 
     for competition in new_competitions:
         requests.delete(
             f"{URL}/{VERSION}/competitions/{competition}",
-            headers={"authorization": f"Bearer {obtain_access_token()}"},
+            headers={"authorization": f"Bearer {_obtain_access_token()}"},
         )
     logging.info("Tear down complete")
