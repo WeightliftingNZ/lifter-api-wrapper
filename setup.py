@@ -18,7 +18,7 @@ setup(
     author="Shivan Sivakumaran",
     author_email="shivan.sivakumaran@gmail.com",
     license="MIT",
-    packages=["lifter_api_wrapper"],
+    packages=["lifter_api"],
     install_requires=[
         "requests",
     ],
