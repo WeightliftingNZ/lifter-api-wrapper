@@ -1,12 +1,12 @@
 """test_helper.py - contains tests for lifter_api_wrapper/utils/helper.py"""
 import pytest
 
-from lifter_api_wrapper.utils.exceptions import (
+from lifter_api.utils.exceptions import (
     InvalidDateError,
     InvalidDateTimeError,
     InvalidLiftsError,
 )
-from lifter_api_wrapper.utils.helpers import verify_date, verify_datetime, verify_lifts
+from lifter_api.utils.helpers import verify_date, verify_datetime, verify_lifts
 
 
 def test_verify_date():

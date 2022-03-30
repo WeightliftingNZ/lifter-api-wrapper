@@ -5,8 +5,8 @@ import os
 import pytest
 import requests
 
-from lifter_api_wrapper import LifterAPI
-from lifter_api_wrapper.utils.defaults import URL, VERSION
+from lifter_api import LifterAPI
+from lifter_api.utils.defaults import URL, VERSION
 
 logging.basicConfig(
     level=logging.DEBUG,

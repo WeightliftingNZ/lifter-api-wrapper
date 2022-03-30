@@ -1,7 +1,7 @@
 """test_api.py - tests LifterAPI methods"""
 import pytest
 
-from lifter_api_wrapper.utils.exceptions import TokenNotProvidedError
+from lifter_api.utils.exceptions import TokenNotProvidedError
 
 # pylint: disable=R0201
 
