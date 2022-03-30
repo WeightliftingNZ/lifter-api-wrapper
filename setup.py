@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="lifter-api-wrapper",
     version="0.1.0",
-    description="A python wrapper to access Lifer API",
+    description="A python wrapper to access Lifter API",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper",
