@@ -1,7 +1,15 @@
-.PHONY test
+.PHONY: test
 test:
 	pipenv run pytest -vv
 
-.PHONY docs
+.PHONY: build
+build:
+	rm -rf build && \
+	rm -rf dist && \
+	rm -rf lifter_api_wrapper.egg-info && \
+	python setup.py sdist bdist_wheel
 
-.PHONY build
+.PHONY: test-upload
+
+test-upload:
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*

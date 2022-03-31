@@ -2,7 +2,7 @@
 
 import pathlib
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 HERE = pathlib.Path(__file__).parent
 
@@ -18,7 +18,7 @@ setup(
     author="Shivan Sivakumaran",
     author_email="shivan.sivakumaran@gmail.com",
     license="MIT",
-    packages=["lifter_api"],
+    packages=find_packages(exclude=["tests"]),
     install_requires=[
         "requests",
     ],

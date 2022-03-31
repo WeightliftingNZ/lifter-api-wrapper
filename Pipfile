@@ -9,12 +9,12 @@ requests = "*"
 [dev-packages]
 pytest = "*"
 setuptools = "*"
-bumpversion = "*"
 tox = "*"
 sphinx = "*"
 twine = "*"
 pylint = "*"
 mypy = "*"
+bump2version = "*"
 
 [requires]
 python_version = "3.10"
