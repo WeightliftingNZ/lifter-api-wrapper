@@ -21,7 +21,7 @@ from .utils.helpers import (
 from .utils.types import AthleteList, CompetitionList, LiftReturn, LiftSet, SessionSet
 
 logging.basicConfig(
-    level=logging.DEBUG, format=" %(asctime)s - %(levelname)s - %(message)s"
+    level=logging.ERROR, format=" %(asctime)s - %(levelname)s - %(message)s"
 )
 
 # pylint: disable=R0904,R0914

@@ -33,7 +33,7 @@ If you use `pipenv`, then the key is loaded as a environment variable `API_TOKEN
 You can simple create an object like so:
 
 ```python
-from lifter_api_wrapper import LifterAPI
+from lifter_api import LifterAPI
 
 import os
 

@@ -12,4 +12,4 @@ build:
 .PHONY: test-upload
 
 test-upload:
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	twine upload -r testpypi dist/*
