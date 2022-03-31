@@ -118,7 +118,7 @@ def mock_lift():
         "bodyweight": 86,
         "weight_category": "M102+",
         "team": "CCW",
-        "lottery_number": 1,
+        "lottery_number": 99,
     }
     return lift
 

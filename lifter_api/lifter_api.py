@@ -24,7 +24,7 @@ logging.basicConfig(
     level=logging.DEBUG, format=" %(asctime)s - %(levelname)s - %(message)s"
 )
 
-# pylint: disable=R0904
+# pylint: disable=R0904,R0914
 
 
 class LifterAPI:
@@ -654,8 +654,29 @@ class LifterAPI:
         response.raise_for_status()
         return response.json()
 
+    # pylint: disable-msg=too-many-arguments
+
     def create_lift(
-        self, competition_id: str, session_id: str, athlete_id: str, **kwargs
+        self,
+        competition_id: str,
+        session_id: str,
+        athlete_id: str,
+        snatch_first: str,
+        snatch_first_weight: int,
+        snatch_second: str,
+        snatch_second_weight: int,
+        snatch_third: str,
+        snatch_third_weight: int,
+        cnj_first: str,
+        cnj_first_weight: int,
+        cnj_second: str,
+        cnj_second_weight: int,
+        cnj_third: str,
+        cnj_third_weight: int,
+        bodyweight: int,
+        weight_category: str,
+        team: str,
+        lottery_number: int,
     ) -> dict[str, str | int | LiftSet] | dict[str, str | int | SessionSet]:
         """Creates a lift in a session
 
@@ -663,7 +684,22 @@ class LifterAPI:
             competition_id (str): competition id
             session_id (str): session id
             athlete_id (str): athlete id
-            **kwargs: snatch_first (str), snatch_first_weight (int),snatch_second (str), snatch_second_weight (int), snatch_third (str),snatch_third_weight (int), cnj_first (str), cnj_first_weight (int), cnj_second (str), cnj_second_weight (int), cnj_third (str), cnj_third_weight (int), bodyweight (float), weight_category (str), team (str), lottery_number (int)
+            snatch_first (str): accepts "LIFT", "NOLIFT", "DNA"
+            snatch_first_weight (int): weight of the lift.
+            snatch_second (str): same as snatch_first
+            snatch_second_weight (int): weight must be same or larger if previous lift was NOLIFT or even DNA, can be same weight is, and weights are in kilograms
+            snatch_third (str): same idea as snatch_first
+            snatch_third_weight (int): same as snatch_second_weight
+            cnj_first (str): follow same as snatches
+            cnj_first_weight (int): follows as above
+            cnj_second (str): follows as above
+            cnj_second_weight (int): follows as above
+            cnj_third (str): follows as above
+            cnj_third_weight (int): follows as above
+            bodyweight (float): body weight in kilograms
+            weight_category (str): appropriate weight category
+            team (str): team
+            lottery_number (int): determines lift order
 
         Raises:
             NotAllowedError: _description_
@@ -673,21 +709,38 @@ class LifterAPI:
         """
         # validate lifts
         verify_lifts(
-            (kwargs["snatch_first"], kwargs["snatch_first_weight"]),
-            (kwargs["snatch_second"], kwargs["snatch_second_weight"]),
-            (kwargs["snatch_third"], kwargs["snatch_third_weight"]),
+            (str(snatch_first), int(snatch_first_weight)),
+            (str(snatch_second), int(snatch_second_weight)),
+            (str(snatch_third), int(snatch_third_weight)),
         )
         verify_lifts(
-            (kwargs["cnj_first"], kwargs["cnj_first_weight"]),
-            (kwargs["cnj_second"], kwargs["cnj_second_weight"]),
-            (kwargs["cnj_third"], kwargs["cnj_third_weight"]),
+            (str(cnj_first), int(cnj_first_weight)),
+            (str(cnj_second), int(cnj_second_weight)),
+            (str(cnj_third), int(cnj_third_weight)),
         )
-        kwargs["athlete"] = athlete_id
-        kwargs["competition"] = competition_id
         response = requests.post(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts",
             headers=self._provide_authorization_header(),
-            json=kwargs,
+            json={
+                "session": session_id,
+                "athlete": athlete_id,
+                "snatch_first": snatch_first,
+                "snatch_first_weight": snatch_first_weight,
+                "snatch_second": snatch_second,
+                "snatch_second_weight": snatch_second_weight,
+                "snatch_third": snatch_third,
+                "snatch_third_weight": snatch_third_weight,
+                "cnj_first": cnj_first,
+                "cnj_first_weight": cnj_first_weight,
+                "cnj_second": cnj_second,
+                "cnj_second_weight": cnj_second_weight,
+                "cnj_third": cnj_third,
+                "cnj_third_weight": cnj_third_weight,
+                "bodyweight": float(bodyweight),
+                "weight_category": str(weight_category),
+                "team": str(team),
+                "lottery_number": int(lottery_number),
+            },
         )
         if response.status_code not in [201, 200, 403, 401, 404]:
             raise NotAllowedError(
@@ -710,6 +763,8 @@ class LifterAPI:
                 )
         response.raise_for_status()
         return response.json()
+
+    # pylint: enable-msg=too-many-arguments
 
     def edit_lift(
         self, competition_id: str, session_id: str, lift_id: str, **kwargs
