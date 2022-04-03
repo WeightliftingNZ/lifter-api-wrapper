@@ -2,6 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/lifter-api-wrapper/badge/?version=latest)](https://lifter-api-wrapper.readthedocs.io/en/latest/?badge=latest)
 [![Pylint](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/pylint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/pylint.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This is a Python wrapper to access the Lifter API
 
@@ -37,13 +38,19 @@ from lifter_api import LifterAPI
 
 import os
 
-lifter_api = LifterAPI(auth_token=os.getenv("API_TOKEN")
+lifter_api = LifterAPI(auth_token=os.getenv("API_TOKEN"))
 
 # this will use default version, v1
 # you can specify the version
 
 lifter_api_version1 = LifterAPI(version="v1", auth_token=os.getenv("API_TOKEN"))
 ```
+
+## For Local Development
+
+For local development, you will need to download the [API from here](https://github.com/ChristchurchCityWeightlifting/lifter-api).
+
+You will need to set a environment variable, `LOCAL_DEVELOPMENT=1` and it's a good idea to put this in the `.env` file. This will means the localhost API will be hit and not the live API.
 
 ## Contribution
 

@@ -25,15 +25,6 @@ repos:
       - id: bandit
         args: ["-iii", "-ll"]
 
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pipenv run pylint
-        language: system
-        types: [python]
-        require_serial: true
-
   - repo: https://github.com/ambv/black
     rev: 22.3.0
     hooks:
@@ -68,6 +59,11 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
+
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.1.1
+    hooks:
+      - id: pydocstyle
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.1
