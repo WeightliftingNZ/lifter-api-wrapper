@@ -16,8 +16,15 @@ jobs:
       - name: black
         uses: psf/black@stable
 
+      - name: isort
+        uses: isort/isort-action@master
+
       - name: flake8
         uses: py-actions/flake8@v2
         with:
           ignore: "E501,W503,E203,F401"
           exclude: "docs/source/conf.py,build,dist"
+
+      - name: mypy
+        run: |
+          pip install mypy; mypy .

@@ -1,5 +1,6 @@
 # Lifter API Wrapper
 
+[![Lint](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml)
 [![Documentation Status](https://readthedocs.org/projects/lifter-api-wrapper/badge/?version=latest)](https://lifter-api-wrapper.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
