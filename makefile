@@ -7,7 +7,7 @@ build:
 	rm -rf build && \
 	rm -rf dist && \
 	rm -rf lifter_api_wrapper.egg-info && \
-	python setup.py sdist bdist_wheel
+	pipenv run python setup.py sdist bdist_wheel
 
 .PHONY: test-upload
 
