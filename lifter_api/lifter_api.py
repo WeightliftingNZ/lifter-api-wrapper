@@ -1,4 +1,4 @@
-"""Lifter API Wrapper"""
+"""lifter_api.py - contains the Lifter API Wrapper."""
 import logging
 
 import requests
@@ -24,26 +24,34 @@ logging.basicConfig(
     level=logging.ERROR, format=" %(asctime)s - %(levelname)s - %(message)s"
 )
 
-# pylint: disable=R0904,R0914
-
 
 class LifterAPI:
     """
-    API for Lifter
+    Contain all methods for to access the LifterAPI.
 
-    Contains all functionality for LifterAPI
+    Methods:
+        athlete() - gives a list of athletes
+
+
     """
 
     def __init__(
         self, url: str = URL, version: str = VERSION, auth_token: str = None
     ) -> None:
+        """Construct object.
+
+        Args:
+            url (str): The API endpoint base URL. Defaults to "https://api.lifter.shivan.xyz", or "http://0.0.0.0:8000" if on local development.
+            version (str): This is the version of the API. Defaults to "v1".
+            auth_token (str, optional): This is the authorization token to access 'higher' methods. Defaults to None.
+        """
         self._url = url
         self._version = version
         self._auth_token = auth_token
         self.__access_token = "_"  # cannot be empty string
 
     def __verify_access_token(self) -> bool:
-        """Checks if the access token is true and valid.
+        """Check if the access token is true and valid.
 
         Will return True if the access token is verfied and current; returns False if the access token needs to be refreshed.
 
@@ -59,7 +67,7 @@ class LifterAPI:
         return response.json().get("code") != "token_not_valid"
 
     def _obtain_access_token(self) -> str:
-        """This obtains the access key.
+        """Obtain the access key.
 
         Also checks if the current access key is valid as not to refresh another key for no reason.
 
@@ -69,7 +77,6 @@ class LifterAPI:
         Returns:
             str: Access token
         """
-
         if not self.__verify_access_token():
             response = requests.post(
                 f"{self._url}/api/token/refresh/",
@@ -83,7 +90,7 @@ class LifterAPI:
         return self.__access_token
 
     def _provide_authorization_header(self) -> dict[str, str]:
-        """This provides the authorization header.
+        """Provide the authorization header.
 
         It will also obtain the access key (which also in turn makes sure the access key is verfied.
 
@@ -98,7 +105,7 @@ class LifterAPI:
         self,
         page: int = 1,
     ) -> AthleteList:
-        """Lists all athletes.
+        """List all athletes.
 
         Args:
             page (int, optional): the page number if there is pagination. Defaults to page 1.
@@ -117,19 +124,19 @@ class LifterAPI:
         ordering: str = "last_name",
         ascending: bool = True,
     ) -> AthleteList:
-        """Able to search for an athlete
+        """Search for an athlete.
 
         Args:
-            search (str): searching term for athlete
-            page int: page number for search, defaults to 1
-            ordering (str): accepts "last_name" or "first_name" on what to order, default to "last_name"
-            ascending (bool): if the search results are ascending or descending, defaults to True
+            search (str): Search term for athlete; ths will be the patient's name.
+            page int: Page number for search. Defaults to 1.
+            ordering (str): Accepts "last_name" or "first_name" on what to order, default to "last_name".
+            ascending (bool): If the search results are ascending or descending, defaults to True.
 
         Raises:
-            NotAllowedError: the ordering was inputted incorrectly
+            NotAllowedError: The ordering was inputted incorrectly.
 
         Returns:
-            AthleteList: search results of athletes as well as page information
+            AthleteList: Search results of athletes as well as page information.
         """
         if ordering not in ["last_name", "first_name"]:
             raise NotAllowedError(
@@ -142,16 +149,16 @@ class LifterAPI:
         return response.json()
 
     def get_athlete(self, athlete_id: str) -> dict[str, str | int | LiftSet]:
-        """Able to get information about an athlete
+        """Get information about an athlete.
 
         Args:
-            athlete_id (str): athlete id
+            athlete_id (str): Athlete ID.
 
         Raises:
-            NotAllowedError: status error
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str | int | LiftSet]: athlete detail
+            dict[str, str | int | LiftSet]: Athlete details including lifts in competitions.
         """
         response = requests.get(f"{self._url}/{self._version}/athletes/{athlete_id}")
         if response.status_code == 404:
@@ -162,18 +169,18 @@ class LifterAPI:
     def create_athlete(
         self, first_name: str, last_name: str, yearborn: int
     ) -> dict[str, str | int]:
-        """Creates athlete
+        """Create an athlete.
 
         Args:
-            first_name (str): first name of Athlete, can include middle names
-            last_name (str): surname
-            yearborn (int): birth year
+            first_name (str): First name of athlete and can include middle names.
+            last_name (str): Surname of ahtlete.
+            yearborn (int): Birth year.
 
         Raises:
-            NotAllowedError: status problem
+            NotAllowedError: Status problem.
 
         Returns:
-            dict[str, str | int]: information about created athlete
+            dict[str, str | int]: information about created athlete.
         """
         response = requests.post(
             f"{self._url}/{self._version}/athletes",
@@ -192,17 +199,17 @@ class LifterAPI:
         return response.json()
 
     def edit_athlete(self, athlete_id: str, **kwargs) -> dict[str, str | int | LiftSet]:
-        """Edits athlete
+        """Edit an exisiting athlete.
 
         Args:
-            athlete_id (str): athlete id
-            **kwargs: first_name (str), last_name(str), yearborn (int)
+            athlete_id (str): Athlete ID.
+            **kwargs: first_name (str), last_name(str), yearborn (int).
 
         Raises:
-            NotAllowedError: status problem
+            NotAllowedError: Status problem.
 
         Returns:
-            dict[str, str | int]: information about edited athlete
+            dict[str, str | int]: Information about edited athlete.
         """
         verify_edit_kwargs(kwargs, ATHLETE_FIELDS)
         response = requests.patch(
@@ -222,16 +229,16 @@ class LifterAPI:
         return response.json()
 
     def delete_athlete(self, athlete_id: str) -> dict[str, str | int | LiftSet]:
-        """Deletes an athlete
+        """Delete an exisiting athlete.
 
         Args:
-            athlete_id (str): athlete id
+            athlete_id (str): Athlete ID.
 
         Raises:
-            NotAllowedError: status error
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: information about deleted athlete
+            dict[str, str]: Information about deleted athlete. Will also return if athlete does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/athletes/{athlete_id}",
@@ -251,10 +258,10 @@ class LifterAPI:
         return {"detail": "Athlete entry deleted."}
 
     def competitions(self, page: int = 1) -> CompetitionList:
-        """Lists all competitions.
+        """List all competitions.
 
         Args:
-            page (int, optional): the page number if there is pagination. Defaults to 1.
+            page (int): The page number if there is pagination. Defaults to 1.
 
         Returns:
             CompetitionList: List of competition. Also, there will be pagination information.
@@ -264,16 +271,16 @@ class LifterAPI:
         return response.json()
 
     def get_competition(self, competition_id: str) -> dict[str, str | int | SessionSet]:
-        """Detail of a competition and it also includes session and lifts
+        """Get detail of an existing competition and it also includes session and lifts.
 
         Args:
-            competition_id (str): competition id
+            competition_id (str): Competition ID.
 
         Raises:
-            NotAllowedError: status error
+            NotAllowedError: Status error.
 
         Returns:
-           dict[str : str | int | SessionSet]: data for the competition, including session information and lifts.
+           dict[str : str | int | SessionSet]: Data for the competition, including session information and lifts. Will also return if competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}"
@@ -290,19 +297,19 @@ class LifterAPI:
         location: str,
         competition_name: str,
     ) -> dict[str, str]:
-        """Creates a competition
+        """Create a competition.
 
         Args:
-            date_start (str): Start date of the competition. Format: YYYY-MM-DD
-            date_end (str): End date of the competition. Format: YYYY-MM-DD
+            date_start (str): Start date of the competition. Format: YYYY-MM-DD.
+            date_end (str): End date of the competition. Format: YYYY-MM-DD.
             location (str): Location of the competition.
             competition_name (str): The name of the competition.
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: created competition information
+            dict[str, str]: Created competition information.
         """
         response = requests.post(
             f"{self._url}/{self._version}/competitions",
@@ -322,17 +329,17 @@ class LifterAPI:
         return response.json()
 
     def edit_competition(self, competition_id: str, **kwargs) -> dict[str, str]:
-        """Editing a competition
+        """Edit an existing competition.
 
         Args:
-            competition_id (str): competition id
-            **kwargs: date_start (str), date_end (str), location (str), competition_name (str)
+            competition_id (str): Competition ID.
+            **kwargs: date_start (str), date_end (str), location (str), competition_name (str).
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: competition information
+            dict[str, str]: Return competition information. Will also return if competition does not exist.
         """
         verify_edit_kwargs(kwargs, COMPETITION_FIELDS)
         response = requests.patch(
@@ -352,16 +359,16 @@ class LifterAPI:
         return response.json()
 
     def delete_competition(self, competition_id: str) -> dict[str, str]:
-        """Delete a competition
+        """Delete a competition.
 
         Args:
-            competition_id (str): competition id
+            competition_id (str): Competition ID.
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: returning information about deleted competition
+            dict[str, str]: Returning information about deleted competition. Will also return if the competition does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/competitions/{competition_id}",
@@ -381,16 +388,16 @@ class LifterAPI:
         return {"detail": "Competition entry deleted."}
 
     def sessions(self, competition_id: str) -> dict[str, str | int | SessionSet]:
-        """Gets a list of sessions for a given competition
+        """Get a list of sessions for an existing competition.
 
         Attributes:
-            competition_id (str): the competition id
+            competition_id (str): Competition ID
 
         Raises:
-            NotAllowedError: Some error
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str: str | int | SessionSet]: this is the returned data for sessions in a competition
+            dict[str: str | int | SessionSet]: Session data for the competition. Returns if competition does not exist as well.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions"
@@ -409,17 +416,17 @@ class LifterAPI:
     def get_session(
         self, competition_id: str, session_id: str
     ) -> dict[str, str | int | SessionSet]:
-        """Gets a session from a competition.
+        """Get an existing session from an existing competition.
 
         Args:
-            competition_id (str): competition_id
-            session_id (str): session_id
+            competition_id (str): Competition ID.
+            session_id (str): Session ID.
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str : str | int | LiftSet]: The session information plus all the lifts in the session.
+            dict[str : str | int | LiftSet]: The session information plus all the lifts in the session. Will also return if the competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}"
@@ -437,7 +444,6 @@ class LifterAPI:
         response.raise_for_status()
         return response.json()
 
-    # pylint: disable-msg=too-many-arguments
     def create_session(
         self,
         competition_id: str,
@@ -451,12 +457,12 @@ class LifterAPI:
         timekeeper: str = "Empty",
         jury: str = "Empty",
     ) -> dict[str, str | int | SessionSet]:
-        """Create a session within a competition
+        """Create a session for an existing competition.
 
         Args:
-            competition_id (str): competition id.
-            session_datetime (str): session date and time in format YYYY:MM:DDTHH:mm:ssZ.
-            announcer (str, optional): announcer for the session. Defaults to "Empty".
+            competition_id (str): Competition ID.
+            session_datetime (str): Session date and time in format YYYY:MM:DDTHH:mm:ssZ.
+            announcer (str, optional): Announcer for the session. Defaults to "Empty".
             referee_first (str, optional): 1st referee. Defaults to "Empty".
             referee_second (str, optional): Center referee. Defaults to "Empty".
             referee_third (str, optional): 3rd referee. Defaults to "Empty".
@@ -466,10 +472,10 @@ class LifterAPI:
             jury (str, optional): This can be multiple jury. Defaults to "Empty".
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: Created Session.
+            dict[str, str]: Return created session information. Will also return if competition does not exist.
         """
         response = requests.post(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions",
@@ -498,23 +504,21 @@ class LifterAPI:
         response.raise_for_status()
         return response.json()
 
-    # pylint: enable-msg=too-many-arguments
-
     def edit_session(
         self, competition_id: str, session_id: str, **kwargs
     ) -> dict[str, str | int | SessionSet]:
-        """Edited Session.
+        """Edit an existing session.
 
         Args:
-            competition_id (str): competition id.
-            session_id (str): session id.
+            competition_id (str): Competition ID.
+            session_id (str): Session ID.
             **kwargs: session_datetime (str, optional), announcer (str, optional), referee_first (str, optional), referee_third (str, optional), technical_controller (str, optional), marshall (str, optional), timekeeper (str, optional), jury (str, optional)
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status Error.
 
         Returns:
-            dict[str, str] Edited session information.
+            dict[str, str]: Return information about the edited session. Will also return if the session does not exist or the competition.
         """
         verify_edit_kwargs(kwargs, SESSION_FIELDS)
         kwargs["competition"] = competition_id
@@ -546,17 +550,17 @@ class LifterAPI:
     ) -> dict[str, str] | dict[str, str | int | SessionSet] | dict[
         str, str | int | LiftSet
     ]:
-        """Delete a session.
+        """Delete an existing session.
 
         Args:
-            competition_id (str): competition id
-            session_id (str): session id
+            competition_id (str): Competition ID.
+            session_id (str): Session ID.
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: deleted session information.
+            dict[str, str]: Deleted session information. Also, returns if session or competition does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}",
@@ -587,17 +591,17 @@ class LifterAPI:
     ) -> dict[str, str] | dict[str, str | int | SessionSet] | dict[
         str, str | int | LiftSet
     ]:
-        """Provides a lifts for a given competition and session
+        """Provide lifts for a given competition and session.
 
         Args:
-            competition_id (str): the competitiotn id
-            session_id (str): the session id
+            competition_id (str): Competition ID.
+            session_id (str): Session ID.
 
         Raises:
-            NotAllowedError: some error?
+            NotAllowedError: Status Error.
 
         Returns:
-            dict[str: str | int | LiftSet]: lift data plus pagination information
+            dict[str: str | int | LiftSet]: Lift data plus pagination information. Will also return if the session or competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts"
@@ -621,18 +625,18 @@ class LifterAPI:
     def get_lift(
         self, competition_id: str, session_id: str, lift_id: str
     ) -> dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn:
-        """Get lift data
+        """Get particular lift data.
 
         Args:
-            competition_id (str): competition id
-            session_id (str): session id
-            lift_id (str): lift id
+            competition_id (str): Competition ID
+            session_id (str): Session ID
+            lift_id (str): Lift ID
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: return message, lift information
+            dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: Lift information. Will also return if session or compeitition does not exit.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts/{lift_id}"
@@ -653,8 +657,6 @@ class LifterAPI:
             return {"detail": "Lift does not exist."}
         response.raise_for_status()
         return response.json()
-
-    # pylint: disable-msg=too-many-arguments
 
     def create_lift(
         self,
@@ -678,34 +680,34 @@ class LifterAPI:
         team: str,
         lottery_number: int,
     ) -> dict[str, str | int | LiftSet] | dict[str, str | int | SessionSet]:
-        """Creates a lift in a session
+        """Create a lift in an existing session.
 
         Args:
-            competition_id (str): competition id
-            session_id (str): session id
-            athlete_id (str): athlete id
-            snatch_first (str): accepts "LIFT", "NOLIFT", "DNA"
-            snatch_first_weight (int): weight of the lift.
-            snatch_second (str): same as snatch_first
-            snatch_second_weight (int): weight must be same or larger if previous lift was NOLIFT or even DNA, can be same weight is, and weights are in kilograms
-            snatch_third (str): same idea as snatch_first
-            snatch_third_weight (int): same as snatch_second_weight
-            cnj_first (str): follow same as snatches
-            cnj_first_weight (int): follows as above
-            cnj_second (str): follows as above
-            cnj_second_weight (int): follows as above
-            cnj_third (str): follows as above
-            cnj_third_weight (int): follows as above
-            bodyweight (float): body weight in kilograms
-            weight_category (str): appropriate weight category
-            team (str): team
-            lottery_number (int): determines lift order
+            competition_id (str): Competition ID.
+            session_id (str): Session ID.
+            athlete_id (str): Athlete ID.
+            snatch_first (str): Accepts "LIFT", "NOLIFT", "DNA".
+            snatch_first_weight (int): Weight of the lift.
+            snatch_second (str): Same as snatch_first.
+            snatch_second_weight (int): Weight must be same or larger if previous lift was NOLIFT or even DNA, can be same weight is, and weights are in kilograms.
+            snatch_third (str): Same idea as snatch_first.
+            snatch_third_weight (int): Same as snatch_second_weight.
+            cnj_first (str): Follow same as snatches.
+            cnj_first_weight (int): Follows as above.
+            cnj_second (str): Follows as above.
+            cnj_second_weight (int): Follows as above.
+            cnj_third (str): Follows as above.
+            cnj_third_weight (int): Follows as above.
+            bodyweight (float): Body weight in kilograms.
+            weight_category (str): Appropriate weight category.
+            team (str): Team.
+            lottery_number (int): Determines lift order.
 
         Raises:
-            NotAllowedError: _description_
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str]: created athlete
+            dict[str, str]: Information about created lift. Will also return if athlete, session or competition does not exist.
         """
         # validate lifts
         verify_lifts(
@@ -764,12 +766,10 @@ class LifterAPI:
         response.raise_for_status()
         return response.json()
 
-    # pylint: enable-msg=too-many-arguments
-
     def edit_lift(
         self, competition_id: str, session_id: str, lift_id: str, **kwargs
     ) -> dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn:
-        """Allows lifts to be edited
+        """Edit an existing lift.
 
             Args:
                 competition_id (str): competition id
@@ -821,18 +821,18 @@ class LifterAPI:
     def delete_lift(
         self, competition_id: str, session_id: str, lift_id: str
     ) -> dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn:
-        """Delete lift
+        """Delete an existing lift.
 
         Args:
-            competition_id (str): competition id
-            session_id (int): session id
-            lift_id (int): lift id
+            competition_id (str): Competition ID.
+            session_id (int): Session ID.
+            lift_id (int): Lift ID.
 
         Raises:
-            NotAllowedError: some error
+            NotAllowedError: Status error.
 
         Returns:
-            dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: deleted lift confirmation
+            dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: Information about deleted lift. Will also mention if session or competition does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts/{lift_id}",

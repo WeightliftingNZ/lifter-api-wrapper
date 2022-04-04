@@ -1,7 +1,6 @@
 # Lifter API Wrapper
 
 [![Documentation Status](https://readthedocs.org/projects/lifter-api-wrapper/badge/?version=latest)](https://lifter-api-wrapper.readthedocs.io/en/latest/?badge=latest)
-[![Pylint](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/pylint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/pylint.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This is a Python wrapper to access the Lifter API

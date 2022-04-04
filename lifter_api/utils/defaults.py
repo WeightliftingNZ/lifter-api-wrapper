@@ -1,7 +1,10 @@
-"""All the defaults"""
+"""default.py - contains default constants."""
+import os
 
 # used for the url for the API
 URL = "http://0.0.0.0:8000"
+if os.getenv("LOCAL_DEVELOPMENT", 1) == 0:
+    URL = "https://api.lifter.shivan.xyz"
 VERSION = "v1"
 
 # field required for creation/deletion

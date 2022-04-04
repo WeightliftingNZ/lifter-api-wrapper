@@ -1,4 +1,4 @@
-"""conftest.py - contains all the fixtures and test cases"""
+"""conftest.py - Contains all the fixtures and test cases."""
 import logging
 import os
 
@@ -12,8 +12,6 @@ logging.basicConfig(
     level=logging.DEBUG,
     format=" %(asctime)s - %(levelname)s - %(message)s",
 )
-
-# pylint: disable=R0914,R0915,W0621
 
 
 @pytest.fixture(scope="class")
@@ -36,7 +34,7 @@ def authenticated_api_user():
 
 @pytest.fixture(scope="class")
 def mock_athlete():
-    """Mock athlete"""
+    """Mock athlete."""
     athlete = {
         "first_name": "Test",
         "last_name": "USER",
@@ -47,7 +45,7 @@ def mock_athlete():
 
 @pytest.fixture(scope="class")
 def mock_altered_athlete():
-    """To test editing athlete"""
+    """To test editing athlete."""
     change = {
         "yearborn": 1901,
     }
@@ -56,7 +54,7 @@ def mock_altered_athlete():
 
 @pytest.fixture(scope="class")
 def mock_competition():
-    """Mock competition"""
+    """Mock competition."""
     competition = {
         "date_start": "2022-03-05",
         "date_end": "2022-03-06",
@@ -101,7 +99,7 @@ def mock_altered_session():
 
 @pytest.fixture(scope="class")
 def mock_lift():
-    """Mock lift"""
+    """Mock lift."""
     lift = {
         "snatch_first": "LIFT",
         "snatch_first_weight": 120,
@@ -125,20 +123,20 @@ def mock_lift():
 
 @pytest.fixture(scope="class")
 def mock_altered_lift():
-    """To test editing a lift"""
+    """To test editing a lift."""
     change = {"bodyweight": 87}
     return change
 
 
 @pytest.fixture(scope="class")
 def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
-    """Mock data"""
+    """Mock data."""
     # authenticate
     auth_token = os.getenv("API_TOKEN")
     access_token = None
 
     def _step_through_pagination(next_page: str, item_list: list) -> list:
-        """steps through pagination"""
+        """Step through pagination."""
         while next_page is not None:
             response = requests.get(next_page).json()
             items = response["results"]
@@ -166,7 +164,7 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
     logging.debug("=== Verifying Token ===")
 
     def _verify_access_token():
-        """Verify token"""
+        """Verify token."""
         if access_token is None:
             return False
         response = requests.post(
@@ -175,7 +173,7 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
         return response.json().get("code") != "token_not_valid"
 
     def _obtain_access_token():
-        """Obtain a token"""
+        """Obtain a token."""
         if auth_token is None:
             raise Exception(
                 message="No token supplied in .env file. Ensure token is saved as API_TOKEN=<API TOKEN>"
