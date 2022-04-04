@@ -19,5 +19,5 @@ jobs:
       - name: flake8
         uses: py-actions/flake8@v2
         with:
-          ignore: "E501,W503, E203"
+          ignore: "E501,W503,E203"
           exclude: "*__init__.py"
