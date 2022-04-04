@@ -29,6 +29,7 @@ jobs:
         run: |
           pip install pipenv &&
           pipenv install &&
+          pipenv shell &&
           pip install mypy &&
           mypy --install-types &&
           mypy .
