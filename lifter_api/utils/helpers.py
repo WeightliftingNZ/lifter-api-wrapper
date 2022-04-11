@@ -1,4 +1,4 @@
-"""Helper Functions for Lifter API"""
+"""Helper Functions for Lifter API."""
 
 from datetime import datetime
 
@@ -13,14 +13,14 @@ from .exceptions import (
 def verify_create_kwargs(
     input_fields: dict[str, str], required_fields: list[str]
 ) -> None:
-    """verifies if the create kwargs are valid
+    """Verify if the create kwargs are valid.
 
     Args:
-        input_fields (dict[str, str]): _description_
-        required_fields (dict[str, str]): _description_
+        input_fields (dict[str, str]): This is the input field.
+        required_fields (dict[str, str]): These are the field required.
 
     Raises:
-        MissingOrExtraValuesError: _description_
+        MissingOrExtraValuesError: Returned if input values don't match the required valies.
     """
     unknown_keys = [key for key in input_fields if key not in required_fields]
     missing_keys = [key for key in required_fields if key not in input_fields]
@@ -31,7 +31,7 @@ def verify_create_kwargs(
 def verify_edit_kwargs(
     input_fields: dict[str, str], required_fields: list[str]
 ) -> None:
-    """Verifies the kwargs for a function have been incorrectly inputted.
+    """Verify the kwargs for a function have been incorrectly inputted.
 
     Args:
         input_fields (dict[str, str]): this is the input field.
@@ -48,7 +48,7 @@ def verify_edit_kwargs(
 
 
 def verify_date(input_date: str) -> str:
-    """Verifies date, ensuring YYYY-MM-DD (e.g. 2022-03-26)
+    """Verify date, ensuring YYYY-MM-DD (e.g. 2022-03-26).
 
     Args:
         input_date (str): date input.
@@ -69,7 +69,7 @@ def verify_date(input_date: str) -> str:
 
 
 def verify_datetime(input_datetime: str) -> str:
-    """Verifies date and time, ensuring YYYY-MM-DDTHH:mm:ssZ (e.g. 2022-03-26T10:00:00Z)
+    """Verify date and time, ensuring YYYY-MM-DDTHH:mm:ssZ (e.g. 2022-03-26T10:00:00Z).
 
     Args:
         input_datetime (str): date and time input
@@ -92,7 +92,7 @@ def verify_datetime(input_datetime: str) -> str:
 def verify_lifts(
     lift_1: tuple[str, int], lift_2: tuple[str, int], lift_3: tuple[str, int]
 ) -> bool:
-    """Validates lifts
+    """Validate lifts.
 
     Ensures "LIFT", "NOLIFT", "DNA" is used for lift status, as well as lift increase
 
@@ -115,19 +115,25 @@ def verify_lifts(
             raise InvalidLiftsError(
                 message="Check lift status must be 'LIFT', 'NOLIFT' or 'DNA'"
             )
-        if i > 0:
-            if lift[0] == "LIFT":
+        if i < 2:
+            if (
+                lift[0] == "LIFT"
+                and lifts[i + 1][0] != "DNA"
+                and lift[1] >= lifts[i + 1][1]
+            ):
                 # if lift is made
-                # current weight must be greater than previous
-                if not lift[1] > lifts[i - 1][1]:
-                    raise InvalidLiftsError(
-                        message="Lifts cannot be lower or same than previous lift if a good lift."
-                    )
-            else:
-                # if lift is not made or not attempted
-                # current weight must be same or greater than previous
-                if not lift[1] >= lifts[i - 1][1]:
-                    raise InvalidLiftsError(
-                        message="Lifts cannot be less than previous lift."
-                    )
+                # the next weight must be greater than previous, unless it's DNA
+                raise InvalidLiftsError(
+                    message="Lifts cannot be lower or same than previous if the lift is a good lift."
+                )
+            if (
+                lift[0] == "NOLIFT"
+                and lifts[i + 1][0] != "DNA"
+                and lift[1] > lifts[i + 1][1]
+            ):
+                # if lift is a no life
+                # the next weight must be greater than or equal to the previous unless it's a DNA
+                raise InvalidLiftsError(
+                    message="Lifts cannot be less than previous lift."
+                )
     return True
