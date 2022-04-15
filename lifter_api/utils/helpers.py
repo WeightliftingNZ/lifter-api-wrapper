@@ -107,6 +107,7 @@ def verify_lifts(
     Returns:
         bool: True if valid lift sequence
     """
+    DICT_PLACING = {0: "1st", 1: "2nd", 2: "3rd"}
     lifts = [lift_1, lift_2, lift_3]
     for i, lift in enumerate(lifts):
         # lift[0] is lift_status ("LIFT", "NOLIFT", "DNA")
@@ -124,7 +125,7 @@ def verify_lifts(
                 # if lift is made
                 # the next weight must be greater than previous, unless it's DNA
                 raise InvalidLiftsError(
-                    message="Lifts cannot be lower or same than previous if the lift is a good lift."
+                    message=f"Lifts cannot be lower or same than previous if the lift is a good lift. CHECK: {DICT_PLACING[i+1]} lifts."
                 )
             if (
                 lift[0] == "NOLIFT"
@@ -134,6 +135,6 @@ def verify_lifts(
                 # if lift is a no life
                 # the next weight must be greater than or equal to the previous unless it's a DNA
                 raise InvalidLiftsError(
-                    message="Lifts cannot be less than previous lift."
+                    message=f"Lifts cannot be less than previous lift. CHECK {DICT_PLACING[i+1]} lifts."
                 )
     return True

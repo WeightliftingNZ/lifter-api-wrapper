@@ -745,9 +745,7 @@ class LifterAPI:
             },
         )
         if response.status_code not in [201, 200, 403, 401, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
+            response.raise_for_status()
         if self.get_athlete(athlete_id=athlete_id) == {
             "detail": "Athlete does not exist."
         }:

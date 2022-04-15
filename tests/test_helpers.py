@@ -31,11 +31,11 @@ def test_verify_datetime():
 
 def test_verify_lifts_valid():
     """Validates lift sequence."""
-    lift_1 = "LIFT"
+    lift_1 = "NOLIFT"
     lift_1_weight = 68
     lift_2 = "NOLIFT"
     lift_2_weight = 71
-    lift_3 = "LIFT"
+    lift_3 = "NOLIFT"
     lift_3_weight = 71
     assert (
         verify_lifts(
