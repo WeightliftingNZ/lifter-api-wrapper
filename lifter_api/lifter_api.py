@@ -154,9 +154,6 @@ class LifterAPI:
         Args:
             athlete_id (str): Athlete ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str | int | LiftSet]: Athlete details including lifts in competitions.
         """
@@ -176,9 +173,6 @@ class LifterAPI:
             last_name (str): Surname of ahtlete.
             yearborn (int): Birth year.
 
-        Raises:
-            NotAllowedError: Status problem.
-
         Returns:
             dict[str, str | int]: information about created athlete.
         """
@@ -192,10 +186,6 @@ class LifterAPI:
             },
         )
         response.raise_for_status()
-        if response.status_code not in [201, 403, 401]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         return response.json()
 
     def edit_athlete(self, athlete_id: str, **kwargs) -> dict[str, str | int | LiftSet]:
@@ -204,9 +194,6 @@ class LifterAPI:
         Args:
             athlete_id (str): Athlete ID.
             **kwargs: first_name (str), last_name(str), yearborn (int).
-
-        Raises:
-            NotAllowedError: Status problem.
 
         Returns:
             dict[str, str | int]: Information about edited athlete.
@@ -217,10 +204,6 @@ class LifterAPI:
             headers=self._provide_authorization_header(),
             json=kwargs,
         )
-        if response.status_code not in [200, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_athlete(athlete_id=athlete_id) == {
             "detail": "Athlete does not exist."
         }:
@@ -234,9 +217,6 @@ class LifterAPI:
         Args:
             athlete_id (str): Athlete ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str]: Information about deleted athlete. Will also return if athlete does not exist.
         """
@@ -244,10 +224,6 @@ class LifterAPI:
             f"{self._url}/{self._version}/athletes/{athlete_id}",
             headers=self._provide_authorization_header(),
         )
-        if response.status_code not in [200, 204, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_athlete(athlete_id=athlete_id) == {
             "detail": "Athlete does not exist."
         }:
@@ -276,9 +252,6 @@ class LifterAPI:
         Args:
             competition_id (str): Competition ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
            dict[str : str | int | SessionSet]: Data for the competition, including session information and lifts. Will also return if competition does not exist.
         """
@@ -305,9 +278,6 @@ class LifterAPI:
             location (str): Location of the competition.
             competition_name (str): The name of the competition.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str]: Created competition information.
         """
@@ -322,10 +292,6 @@ class LifterAPI:
             },
         )
         response.raise_for_status()
-        if response.status_code not in [201, 403, 401]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         return response.json()
 
     def edit_competition(self, competition_id: str, **kwargs) -> dict[str, str]:
@@ -334,9 +300,6 @@ class LifterAPI:
         Args:
             competition_id (str): Competition ID.
             **kwargs: date_start (str), date_end (str), location (str), competition_name (str).
-
-        Raises:
-            NotAllowedError: Status error.
 
         Returns:
             dict[str, str]: Return competition information. Will also return if competition does not exist.
@@ -347,15 +310,11 @@ class LifterAPI:
             headers=self._provide_authorization_header(),
             json=kwargs,
         )
-        response.raise_for_status()
-        if response.status_code not in [200, 403, 401, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_competition(
             competition_id=competition_id
         ):
             self.get_competition(competition_id=competition_id)
+        response.raise_for_status()
         return response.json()
 
     def delete_competition(self, competition_id: str) -> dict[str, str]:
@@ -364,9 +323,6 @@ class LifterAPI:
         Args:
             competition_id (str): Competition ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str]: Returning information about deleted competition. Will also return if the competition does not exist.
         """
@@ -374,10 +330,6 @@ class LifterAPI:
             f"{self._url}/{self._version}/competitions/{competition_id}",
             headers=self._provide_authorization_header(),
         )
-        if response.status_code not in [200, 204, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_competition(
             competition_id=competition_id
         ):
@@ -393,19 +345,12 @@ class LifterAPI:
         Attributes:
             competition_id (str): Competition ID
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str: str | int | SessionSet]: Session data for the competition. Returns if competition does not exist as well.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions"
         )
-        if response.status_code not in [200, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_competition(
             competition_id=competition_id
         ) == {"detail": "Competition does not exist."}:
@@ -422,19 +367,12 @@ class LifterAPI:
             competition_id (str): Competition ID.
             session_id (str): Session ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str : str | int | LiftSet]: The session information plus all the lifts in the session. Will also return if the competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}"
         )
-        if response.status_code not in [200, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404:
             if self.get_competition(competition_id=competition_id) == {
                 "detail": "Competition does not exist."
@@ -471,9 +409,6 @@ class LifterAPI:
             timekeeper (str, optional): Defaults to "Empty".
             jury (str, optional): This can be multiple jury. Defaults to "Empty".
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str]: Return created session information. Will also return if competition does not exist.
         """
@@ -493,10 +428,6 @@ class LifterAPI:
                 "jury": jury,
             },
         )
-        if response.status_code not in [201, 200, 403, 401]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404 and self.get_competition(competition_id) == {
             "detail": "Competition does not exist."
         }:
@@ -514,9 +445,6 @@ class LifterAPI:
             session_id (str): Session ID.
             **kwargs: session_datetime (str, optional), announcer (str, optional), referee_first (str, optional), referee_third (str, optional), technical_controller (str, optional), marshall (str, optional), timekeeper (str, optional), jury (str, optional)
 
-        Raises:
-            NotAllowedError: Status Error.
-
         Returns:
             dict[str, str]: Return information about the edited session. Will also return if the session does not exist or the competition.
         """
@@ -527,10 +455,6 @@ class LifterAPI:
             headers=self._provide_authorization_header(),
             json=kwargs,
         )
-        if response.status_code not in [200, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.raise_for_status == 404:
             if self.get_competition(competition_id) == {
                 "detail": "Competition does not exist."
@@ -556,9 +480,6 @@ class LifterAPI:
             competition_id (str): Competition ID.
             session_id (str): Session ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str]: Deleted session information. Also, returns if session or competition does not exist.
         """
@@ -566,11 +487,7 @@ class LifterAPI:
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}",
             headers=self._provide_authorization_header(),
         )
-        if response.status_code not in [200, 204, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
-        if response.raise_for_status == 404:
+        if response.status_code == 404:
             if self.get_competition(competition_id) == {
                 "detail": "Competition does not exist."
             }:
@@ -597,17 +514,12 @@ class LifterAPI:
             competition_id (str): Competition ID.
             session_id (str): Session ID.
 
-        Raises:
-            NotAllowedError: Status Error.
-
         Returns:
             dict[str: str | int | LiftSet]: Lift data plus pagination information. Will also return if the session or competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts"
         )
-        if response.status_code not in [200, 404]:
-            raise NotAllowedError(message=f"{response.status_code=}")
         if response.status_code == 404:
             if self.get_competition(competition_id=competition_id) == {
                 "detail": "Competition does not exist."
@@ -632,17 +544,12 @@ class LifterAPI:
             session_id (str): Session ID
             lift_id (str): Lift ID
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: Lift information. Will also return if session or compeitition does not exit.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts/{lift_id}"
         )
-        if response.status_code not in [200, 404]:
-            raise NotAllowedError(message=f"{response.status_code}")
         if response.status_code == 404:
             if self.get_competition(competition_id=competition_id) == {
                 "detail": "Competition does not exist."
@@ -702,9 +609,6 @@ class LifterAPI:
             weight_category (str): Appropriate weight category.
             team (str): Team.
             lottery_number (int): Determines lift order.
-
-        Raises:
-            NotAllowedError: Status error.
 
         Returns:
             dict[str, str]: Information about created lift. Will also return if athlete, session or competition does not exist.
@@ -773,9 +677,6 @@ class LifterAPI:
                 session_id (int): session id
                 lift_id (int): lift id
 
-            Raises:
-                NotAllowedError: some error
-
             Returns:
                 dict[str, str] | dict[str, str | int | SessionSet] | dict[
             str, str | int | LiftSet
@@ -787,10 +688,6 @@ class LifterAPI:
             headers=self._provide_authorization_header(),
             json=kwargs,
         )
-        if response.status_code not in [200, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404:
             if self.get_competition(competition_id=competition_id).get("detail") == {
                 "detail": "Competition does not exist."
@@ -825,9 +722,6 @@ class LifterAPI:
             session_id (int): Session ID.
             lift_id (int): Lift ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
             dict[str, str] | dict[str, str | int | SessionSet] | LiftReturn: Information about deleted lift. Will also mention if session or competition does not exist.
         """
@@ -835,10 +729,6 @@ class LifterAPI:
             f"{self._url}/{self._version}/competitions/{competition_id}/sessions/{session_id}/lifts/{lift_id}",
             headers=self._provide_authorization_header(),
         )
-        if response.status_code not in [200, 204, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         if response.status_code == 404:
             if self.get_competition(competition_id=competition_id).get("detail") == {
                 "detail": "Competition does not exist."

@@ -18,6 +18,13 @@ class TestLifterAPIAthlete:
         athlete_details = unauthenticated_api_user.get_athlete(mock_data["athlete_id"])
         assert athlete_details["yearborn"] == mock_athlete["yearborn"]
 
+    def test_get_wrong_athlete(self, mock_data, unauthenticated_api_user):
+        """Able to return athlete does not exist."""
+        athlete_details = unauthenticated_api_user.get_athlete(
+            athlete_id="DOESNOTEXIST"
+        )
+        assert athlete_details["detail"] == "Athlete does not exist."
+
     def test_find_athlete(self, mock_athlete, unauthenticated_api_user):
         """Able to search for an athlete."""
 
