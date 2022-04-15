@@ -113,7 +113,7 @@ def mock_lift():
         "cnj_second_weight": 170,
         "cnj_third": "NOLIFT",
         "cnj_third_weight": 180,
-        "bodyweight": 86,
+        "bodyweight": 86.00,
         "weight_category": "M102+",
         "team": "CCW",
         "lottery_number": 99,
@@ -124,7 +124,7 @@ def mock_lift():
 @pytest.fixture(scope="class")
 def mock_altered_lift():
     """To test editing a lift."""
-    change = {"bodyweight": 87}
+    change = {"bodyweight": 87.0}
     return change
 
 

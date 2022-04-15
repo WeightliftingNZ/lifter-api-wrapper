@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 requests = "*"
-lifter-api-wrapper = {editable = true, path = "."}
 
 [dev-packages]
 pytest = "*"
@@ -15,6 +14,7 @@ sphinx = "*"
 twine = "*"
 mypy = "*"
 bump2version = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.10"

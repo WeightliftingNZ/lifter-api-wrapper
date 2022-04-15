@@ -745,22 +745,21 @@ class LifterAPI:
             },
         )
         if response.status_code not in [201, 200, 403, 401, 404]:
-            response.raise_for_status()
-        if self.get_athlete(athlete_id=athlete_id) == {
-            "detail": "Athlete does not exist."
-        }:
-            return self.get_athlete(athlete_id=athlete_id)
-        if response.status_code == 404:
-            if self.get_competition(competition_id=competition_id) == {
-                "detail": "Competition does not exist."
+            if self.get_athlete(athlete_id=athlete_id) == {
+                "detail": "Athlete does not exist."
             }:
-                return self.get_competition(competition_id=competition_id)
-            if self.get_session(
-                competition_id=competition_id, session_id=session_id
-            ) == {"detail": "Session does not exist."}:
-                return self.get_session(
+                return self.get_athlete(athlete_id=athlete_id)
+            if response.status_code == 404:
+                if self.get_competition(competition_id=competition_id) == {
+                    "detail": "Competition does not exist."
+                }:
+                    return self.get_competition(competition_id=competition_id)
+                if self.get_session(
                     competition_id=competition_id, session_id=session_id
-                )
+                ) == {"detail": "Session does not exist."}:
+                    return self.get_session(
+                        competition_id=competition_id, session_id=session_id
+                    )
         response.raise_for_status()
         return response.json()
 

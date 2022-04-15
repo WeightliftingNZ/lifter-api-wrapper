@@ -325,7 +325,7 @@ class TestLifterAPILift:
             session_id=mock_data["session_id"],
         )
         assert lifts["count"] == 1
-        assert lifts["results"][0]["bodyweight"] == mock_lift["bodyweight"]
+        assert float(lifts["results"][0]["bodyweight"]) == mock_lift["bodyweight"]
 
     def test_get_lift(self, mock_data, mock_lift, unauthenticated_api_user):
         """Provides detail lifts view for particular lift (rarely used?)."""
@@ -334,7 +334,7 @@ class TestLifterAPILift:
             session_id=mock_data["session_id"],
             lift_id=mock_data["lift_id"],
         )
-        assert lift["bodyweight"] == mock_lift["bodyweight"]
+        assert float(lift["bodyweight"]) == mock_lift["bodyweight"]
 
     def test_create_lift_unauthenticated(
         self, unauthenticated_api_user, mock_lift, mock_data
@@ -402,7 +402,7 @@ class TestLifterAPILift:
             session_id=mock_data["session_id"],
             lift_id=lift_id,
         )
-        assert created_lift["bodyweight"] == mock_lift["bodyweight"]
+        assert float(created_lift["bodyweight"]) == mock_lift["bodyweight"]
 
         # editing athlete
         authenticated_api_user.edit_lift(
@@ -416,7 +416,7 @@ class TestLifterAPILift:
             session_id=mock_data["session_id"],
             lift_id=lift_id,
         )
-        assert edited_lift["bodyweight"] == mock_altered_lift["bodyweight"]
+        assert float(edited_lift["bodyweight"]) == mock_altered_lift["bodyweight"]
 
         # deleting athlete
         authenticated_api_user.delete_lift(
