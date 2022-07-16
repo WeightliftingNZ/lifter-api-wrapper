@@ -4,7 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
+requests = "2.28.1"
+lifter-api-wrapper = {editable = true, path = "."}
+types-requests = "*"
 
 [dev-packages]
 pytest = "*"
@@ -15,6 +17,9 @@ twine = "*"
 mypy = "*"
 bump2version = "*"
 pytest-cov = "*"
+flake8 = "*"
+pytest-mock = "*"
+mock = "*"
 
 [requires]
 python_version = "3.10"

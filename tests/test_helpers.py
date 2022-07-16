@@ -1,64 +1,98 @@
-"""test_helper.py - contains tests for lifter_api_wrapper/utils/helper.py."""
+"""Test for helper functions."""
+from contextlib import nullcontext as does_not_raise
+
 import pytest
+from lifter_api.utils.defaults import LIVE_URL, TEST_URL
+from lifter_api.utils.exceptions import InvalidDateError, InvalidLiftsError
+from lifter_api.utils.helpers import load_url, verify_date, verify_lifts
 
-from lifter_api.utils.exceptions import (
-    InvalidDateError,
-    InvalidDateTimeError,
-    InvalidLiftsError,
+
+@pytest.mark.parametrize(
+    "action,value,expected",
+    [
+        pytest.param("set", "0", LIVE_URL, id="Live URL"),
+        pytest.param("set", "1", TEST_URL, id="Test URL"),
+        pytest.param("del", None, LIVE_URL, id="Test URL defaults"),
+    ],
 )
-from lifter_api.utils.helpers import verify_date, verify_datetime, verify_lifts
+def test_load_url(monkeypatch, action, value, expected):
+    if action == "set":
+        monkeypatch.setenv("LOCAL_DEVELOPMENT", value)
+    elif action == "del":
+        monkeypatch.delenv("LOCAL_DEVELOPMENT")
+    assert load_url() == expected
 
 
-def test_verify_date():
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        pytest.param("2022-01-12", (does_not_raise(), None), id="Normal date"),
+        pytest.param(
+            "2022-13-32",
+            (
+                pytest.raises(InvalidDateError),
+                "Incorrect date format. Please use YYYY-MM-DD",
+            ),
+            id="Invalid date",
+        ),
+        pytest.param(
+            "2022-13-32",
+            (pytest.raises(InvalidDateError), "WrongErrorMessage"),
+            id="Incorrect error message",
+            marks=pytest.mark.xfail,
+        ),
+    ],
+)
+def test_verify_date(test_input, expected):
     """Verify date works and also an invalid case is tested."""
-    valid_dates = "2022-01-12"
-    invalid_dates = "2022-13-32"
-    assert verify_date(valid_dates) == valid_dates
-    with pytest.raises(InvalidDateError) as excinfo:
-        verify_date(invalid_dates)
-    assert "YYYY-MM-DD" in str(excinfo.value)
+    with expected[0] as excinfo:
+        verify_date(test_input)
+    if excinfo is not None:
+        assert expected[1] in str(excinfo.value)
 
 
-def test_verify_datetime():
-    """Verify if date time is correct, also tests invalid test case."""
-    valid_datetimes = "2022-01-12T04:58:39Z"
-    invalid_datetimes = "2022-01-12TZ"
-    assert verify_datetime(valid_datetimes) == valid_datetimes
-    with pytest.raises(InvalidDateTimeError) as excinfo:
-        verify_datetime(invalid_datetimes)
-    assert "YYYY-MM-DDTHH:mm:ssZ" in str(excinfo.value)
-
-
-def test_verify_lifts_valid():
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        pytest.param(
+            {
+                "lift_1": ("NOLIFT", 68),
+                "lift_2": ("NOLIFT", 71),
+                "lift_3": ("NOLIFT", 71),
+            },
+            (does_not_raise(), None),
+            id="Valid lift",
+        ),
+        pytest.param(
+            {
+                "lift_1": ("NOLIFT", 68),
+                "lift_2": ("NOLIFT", 67),
+                "lift_3": ("NOLIFT", 71),
+            },
+            (
+                pytest.raises(InvalidLiftsError),
+                "Lifts cannot be less than previous lift. CHECK 2nd lifts.",
+            ),
+            id="Invalid lift",
+        ),
+        pytest.param(
+            {
+                "lift_1": ("LIFT", 68),
+                "lift_2": ("NOLIFT", 71),
+                "lift_3": ("NOLIFT", 71),
+            },
+            (
+                pytest.raises(InvalidLiftsError),
+                "Lifts cannot be less than previous lift. CHECK 2nd lifts.",
+            ),
+            id="Incorrect outcome",
+            marks=pytest.mark.xfail,
+        ),
+    ],
+)
+def test_verify_lifts(test_input, expected):
     """Validates lift sequence."""
-    lift_1 = "NOLIFT"
-    lift_1_weight = 68
-    lift_2 = "NOLIFT"
-    lift_2_weight = 71
-    lift_3 = "NOLIFT"
-    lift_3_weight = 71
-    assert (
-        verify_lifts(
-            (lift_1, lift_1_weight), (lift_2, lift_2_weight), (lift_3, lift_3_weight)
-        )
-        is True
-    )
-
-
-def test_verify_lifts_invalid():
-    """Validates lift with invalid sequence."""
-    lift_1 = "LIFT"
-    lift_1_weight = 100
-    lift_2 = "NOLIFT"
-    lift_2_weight = 99
-    lift_3 = "DNA"
-    lift_3_weight = 0
-
-    with pytest.raises(InvalidLiftsError) as excinfo:
-        verify_lifts(
-            (lift_1, lift_1_weight), (lift_2, lift_2_weight), (lift_3, lift_3_weight)
-        )
-    assert (
-        "Lifts cannot be lower or same than previous if the lift is a good lift."
-        in str(excinfo.value)
-    )
+    with expected[0] as excinfo:
+        verify_lifts(**test_input)
+    if excinfo is not None:
+        assert expected[1] in str(excinfo.value)

@@ -1,10 +1,10 @@
 # Lifter API Wrapper
 
-[![Lint](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml)
+[![Lint](https://github.com/WeightliftingNZ/lifter-api-wrapper/actions/workflows/lint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml)
 [![Documentation Status](https://readthedocs.org/projects/lifter-api-wrapper/badge/?version=latest)](https://lifter-api-wrapper.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This is a Python wrapper to access the Lifter API
+This is a wrapper written in python in order to access [Lifter API](https://github.com/WeightliftingNZ/lifter-api).
 
 ## Installing and Setting Up
 
@@ -48,9 +48,20 @@ lifter_api_version1 = LifterAPI(version="v1", auth_token=os.getenv("API_TOKEN"))
 
 ## For Local Development
 
-For local development, you will need to download the [API from here](https://github.com/ChristchurchCityWeightlifting/lifter-api).
+For local development, you will need to clone the [API from here](https://github.com/ChristchurchCityWeightlifting/lifter-api).
 
 You will need to set a environment variable, `LOCAL_DEVELOPMENT=1` and it's a good idea to put this in the `.env` file. This will means the localhost API will be hit and not the live API.
+
+```
+git clone https://github.com/WeightliftingNZ/lifter-api
+
+
+cd lifter-api
+
+make run
+```
+
+This will run a server and allow you to run tests for this wrapper.
 
 ## Contribution
 

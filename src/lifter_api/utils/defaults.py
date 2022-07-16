@@ -1,26 +1,13 @@
-"""default.py - contains default constants."""
-import os
+"""Contains default constants."""
 
 # used for the url for the API
-URL = "http://0.0.0.0:8000"
-if os.getenv("LOCAL_DEVELOPMENT", 1) == 0:
-    URL = "https://api.lifter.shivan.xyz"
+TEST_URL = "http://0.0.0.0:8000"
+LIVE_URL = "https://api.lifter.shivan.xyz"
 VERSION = "v1"
 
 # field required for creation/deletion
 ATHLETE_FIELDS = ["first_name", "last_name", "yearborn"]
 COMPETITION_FIELDS = ["date_start", "date_end", "location", "competition_name"]
-SESSION_FIELDS = [
-    "session_datetime",
-    "announcer",
-    "referee_first",
-    "referee_second",
-    "referee_third",
-    "technical_controller",
-    "marshall",
-    "timekeeper",
-    "jury",
-]
 LIFT_FIELDS = [
     "athlete",
     "snatch_first",
@@ -37,6 +24,7 @@ LIFT_FIELDS = [
     "cnj_third_weight",
     "bodyweight",
     "weight_category",
+    "session_number",
     "team",
     "lottery_number",
 ]

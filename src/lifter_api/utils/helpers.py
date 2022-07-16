@@ -1,13 +1,21 @@
 """Helper Functions for Lifter API."""
 
+import os
 from datetime import datetime
 
+from .defaults import LIVE_URL, TEST_URL
 from .exceptions import (
     InvalidDateError,
-    InvalidDateTimeError,
     InvalidLiftsError,
     MissingOrExtraValuesError,
 )
+
+
+def load_url():
+    """Load the url based on the environment variable, `LOCAL_DEVELOPMENT`."""
+    if os.getenv("LOCAL_DEVELOPMENT", "0") == "0":
+        return LIVE_URL
+    return TEST_URL
 
 
 def verify_create_kwargs(
@@ -20,7 +28,8 @@ def verify_create_kwargs(
         required_fields (dict[str, str]): These are the field required.
 
     Raises:
-        MissingOrExtraValuesError: Returned if input values don't match the required valies.
+        MissingOrExtraValuesError: Returned if input values don't match the
+        required values.
     """
     unknown_keys = [key for key in input_fields if key not in required_fields]
     missing_keys = [key for key in required_fields if key not in input_fields]
@@ -66,27 +75,6 @@ def verify_date(input_date: str) -> str:
             message="Incorrect date format. Please use YYYY-MM-DD"
         ) from error
     return str(input_date)
-
-
-def verify_datetime(input_datetime: str) -> str:
-    """Verify date and time, ensuring YYYY-MM-DDTHH:mm:ssZ (e.g. 2022-03-26T10:00:00Z).
-
-    Args:
-        input_datetime (str): date and time input
-
-    Raises:
-        InvalidDateTimeError: Excepttion for incorrect date time.
-
-    Returns:
-        bool: Returns True if the date and time is in a correct format.
-    """
-    try:
-        datetime.fromisoformat(str(input_datetime).replace("Z", ""))
-    except ValueError as error:
-        raise InvalidDateTimeError(
-            message="Incorrect datetime format. Please use YYYY-MM-DDTHH:mm:ssZ"
-        ) from error
-    return str(input_datetime)
 
 
 def verify_lifts(

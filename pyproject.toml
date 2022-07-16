@@ -1,14 +1,33 @@
+[build-system]
+requires = ["setuptools >= 62.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-line_length = 88
+line_length = 79
 default_section = "THIRDPARTY"
-known_first_party = ["lifter-api-wrapper"]
-known_third_party = ["pytest", "requests", "setuptools"]
+known_first_party = ["lifter-api"]
+known_third_party = ["lifter_api", "pytest", "requests", "setuptools"]
 
 [tool.black]
-line-length = 88
+line-length = 79
 include = '\.pyi?%'
+
+[tool.pytest.ini_options]
+addopts = "-vv --cov=lifter_api --cov-report html"
+testpaths = ["tests"]
+mock_use_standalone_module = true
 
 [tool.pydocstyle]
 match = ".*/.py"
+
+[tool.mypy]
+mypy_path = "src"
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["src"]
+exclude = [".venv"]
+venvPath = "."
+venv = ".venv"

@@ -1,6 +1,7 @@
+ARGPATH = .
 .PHONY: test
 test:
-	pipenv run pytest -vv
+	pipenv run pytest -k $(ARGPATH)
 
 .PHONY: build
 build:
@@ -13,3 +14,9 @@ build:
 
 test-upload:
 	twine upload -r testpypi dist/*
+
+.PHONY: clean
+clean:
+	rm -rf build && \
+	rm -rf dist && \
+	rm -rf lifter_api_wrapper.egg-info

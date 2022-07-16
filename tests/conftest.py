@@ -1,12 +1,14 @@
-"""conftest.py - Contains all the fixtures and test cases."""
+"""Contains all the fixtures and test cases."""
 import logging
 import os
 
 import pytest
 import requests
-
 from lifter_api import LifterAPI
-from lifter_api.utils.defaults import URL, VERSION
+from lifter_api.utils.defaults import VERSION
+from lifter_api.utils.helpers import load_url
+
+URL = load_url()
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -74,30 +76,6 @@ def mock_altered_competition():
 
 
 @pytest.fixture(scope="class")
-def mock_session():
-    """Mock session."""
-    session = {
-        "session_datetime": "2022-03-05T07:48:11Z",
-        "referee_first": "Referee 1",
-        "referee_second": "Referee 2",
-        "referee_third": "Referee 3",
-        "announcer": "Announcer",
-        "technical_controller": "TC",
-        "marshall": "Marshall",
-        "timekeeper": "TK",
-        "jury": "Jury",
-    }
-    return session
-
-
-@pytest.fixture(scope="class")
-def mock_altered_session():
-    """To test editing a session."""
-    altered_session = {"referee_first": "altered"}
-    return altered_session
-
-
-@pytest.fixture(scope="class")
 def mock_lift():
     """Mock lift."""
     lift = {
@@ -115,6 +93,7 @@ def mock_lift():
         "cnj_third_weight": 180,
         "bodyweight": 86.00,
         "weight_category": "M102+",
+        "session_number": 1,
         "team": "CCW",
         "lottery_number": 99,
     }
@@ -129,7 +108,7 @@ def mock_altered_lift():
 
 
 @pytest.fixture(scope="class")
-def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
+def mock_data(mock_athlete, mock_competition, mock_lift):
     """Mock data."""
     # authenticate
     auth_token = os.getenv("API_TOKEN")
@@ -144,7 +123,8 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
             next_page = response["next"]
         return item_list
 
-    # collect current athlete and competitions ids before set up so can delete newly created items of database and then delete new ones on tear down
+    # collect current athlete and competitions ids before set up so can delete
+    # newly created items of database and then delete new ones on tear down
     athletes_response = requests.get(f"{URL}/{VERSION}/athletes").json()
     athletes = athletes_response["results"]
     pretest_athletes = [athlete["reference_id"] for athlete in athletes]
@@ -204,32 +184,23 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
         json=mock_competition,
     ).json()
 
-    mock_session["competition"] = competition["reference_id"]
-    session = requests.post(
-        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions",
-        headers={"authorization": f"Bearer {_obtain_access_token()}"},
-        json=mock_session,
-    ).json()
-    mock_session.pop("competition", None)
-
     # foreign key relationships
     mock_lift["athlete"] = athlete["reference_id"]
-    mock_lift["session"] = session["reference_id"]
+    mock_lift["competition"] = competition["reference_id"]
 
     lift = requests.post(
-        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/sessions/{session['reference_id']}/lifts",
+        f"{URL}/{VERSION}/competitions/{competition['reference_id']}/lifts",
         headers={"authorization": f"Bearer {_obtain_access_token()}"},
         json=mock_lift,
     ).json()
 
     mock_lift.pop("athlete", None)
-    mock_lift.pop("session", None)
+    mock_lift.pop("competition", None)
 
     logging.info("...Set Up completed.")
     _mocked_data = {
         "athlete_id": athlete["reference_id"],
         "competition_id": competition["reference_id"],
-        "session_id": session["reference_id"],
         "lift_id": lift["reference_id"],
         "pretest_athletes_number": len(pretest_athletes),
         "pretest_competitions_number": len(pretest_competitions),
@@ -261,7 +232,8 @@ def mock_data(mock_athlete, mock_competition, mock_session, mock_lift):
         if competition not in pretest_competitions
     ]
 
-    # tear down n.b. lift should be deleted if competitions and athletes are deleted too
+    # tear down n.b. lift should be deleted if competitions and athletes are
+    # deleted to
     # no .json() on requests.delete()
     logging.info("===Mock Data Tear Down Started===")
     for athlete in new_athletes:
