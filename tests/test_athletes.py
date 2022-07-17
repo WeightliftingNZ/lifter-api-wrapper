@@ -1,10 +1,9 @@
 """Test Athlete methods."""
+from contextlib import nullcontext as does_not_raise
 
 import pytest
-from lifter_api.utils.exceptions import (
-    TokenNotProvidedError,
-    TokenNotValidError,
-)
+from lifter_api.utils.exceptions import NotAllowedError, TokenNotProvidedError
+from lifter_api.utils.types import AthleteList
 
 
 @pytest.mark.usefixtures("mock_data")
@@ -26,21 +25,17 @@ class TestAthleteMixin:
         athlete_details = unauthenticated_api_user.get_athlete(mock_data["athlete_id"])
         assert athlete_details["yearborn"] == mock_athlete["yearborn"]
 
-    def test_get_athlete_doesnotexist(self, unauthenticated_api_user):
-        athlete_details = unauthenticated_api_user.get_athlete("doesnotexist_id")
-        assert athlete_details.get("detail") == "Athlete does not exist."
-
     def test_find_athlete(self, mock_athlete, unauthenticated_api_user):
         """Able to search for an athlete."""
 
-        def get_athlete_search(
-            athlete_search: dict[str : str | int | dict[str, str]],
+        def _get_athlete_search(
+            athlete_search: dict[str, str | int | None | AthleteList],
         ) -> list:
-            """Step through pages.
+            """Step through pages, recursively.
 
             Args:
-                athlete_search (dict[str: str | int | dict[str:str]]: search
-                term.
+                athlete_search (dict[str, str | int | None | AthleteList]):
+                search term.
 
             Returns:
                 list: list of athlete first names.
@@ -57,7 +52,7 @@ class TestAthleteMixin:
                     page=next_page_number,
                     search=f"{mock_athlete['first_name']} {mock_athlete['last_name']}",
                 )
-                get_athlete_search(new_athlete_search)
+                _get_athlete_search(new_athlete_search)
             return athlete_first_name
 
         athlete_search = unauthenticated_api_user.find_athlete(
@@ -69,13 +64,32 @@ class TestAthleteMixin:
             athlete["first_name"] for athlete in athlete_search["results"]
         ]
 
-        athlete_first_name = get_athlete_search(athlete_search)
+        athlete_first_name = _get_athlete_search(athlete_search)
         assert mock_athlete["first_name"] in athlete_first_name
+
+    @pytest.mark.parametrize(
+        "test_input,expected",
+        [
+            pytest.param({"search": "DoesNotExist"}, does_not_raise(), id="No Search"),
+            pytest.param(
+                {"search": "nothing", "ordering": "nothing"},
+                pytest.raises(NotAllowedError),
+                id="Ordering Wrong",
+            ),
+        ],
+    )
+    def test_find_athlete_not_found(
+        self, unauthenticated_api_user, test_input, expected
+    ):
+        """Athlete search input."""
+        with expected:
+            athlete_search = unauthenticated_api_user.find_athlete(**test_input)
+            assert athlete_search["count"] == 0
 
     def test_create_athlete_unauthenticated(
         self, mock_athlete, unauthenticated_api_user
     ):
-        """Cannot create athelete as unauthenticated and will raise an exception as no auth_token provided."""
+        """Cannot create athelete as unauthenticated and will raise an exception as no `auth_token` provided."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
             unauthenticated_api_user.create_athlete(**mock_athlete)
         assert "error" in str(excinfo.value)
@@ -83,7 +97,7 @@ class TestAthleteMixin:
     def test_edit_athlete_unauthenticated(
         self, mock_altered_athlete, mock_data, unauthenticated_api_user
     ):
-        """Cannot edit athelete as unauthenticated and will raise an exception as no auth_token provided."""
+        """Cannot edit athelete as unauthenticated and will raise an exception as no `auth_token` provided."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
             unauthenticated_api_user.edit_athlete(
                 athlete_id=mock_data["athlete_id"], **mock_altered_athlete
@@ -94,16 +108,6 @@ class TestAthleteMixin:
         """Cannot delete athelete as unauthenticated."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
             unauthenticated_api_user.delete_athlete(mock_data["athlete_id"])
-        assert "error" in str(excinfo.value)
-
-    def test_create_athlete_wrongtoken(self, mock_athlete, wrongtoken_api_user):
-        """The token is not valid.
-
-        It is assumed this will work for edit and
-        delete.
-        """
-        with pytest.raises(TokenNotValidError) as excinfo:
-            wrongtoken_api_user.create_athlete(**mock_athlete)
         assert "error" in str(excinfo.value)
 
     def test_create_edit_delete_athlete_authenticated(
@@ -126,12 +130,44 @@ class TestAthleteMixin:
         # deleting athlete
         authenticated_api_user.delete_athlete(athlete_id)
         deleted_athlete = authenticated_api_user.get_athlete(athlete_id)
-        assert deleted_athlete.get("detail") == "Athlete does not exist."
+        assert (
+            deleted_athlete.get("detail")
+            == f"Athlete ID: '{athlete_id}' does not exist."
+        )
+
+    def test_athlete_wrong_id(
+        self,
+        unauthenticated_api_user,
+        authenticated_api_user,
+        mock_altered_athlete,
+    ):
+        """Return does not exist if ID is not valid."""
+        athlete_id = "doesnotexist_id"
+        athlete_details = unauthenticated_api_user.get_athlete(athlete_id=athlete_id)
+        assert (
+            athlete_details.get("detail", None)
+            == f"Athlete ID: '{athlete_id}' does not exist."
+        )
+        athlete_edit = authenticated_api_user.edit_athlete(
+            athlete_id=athlete_id, **mock_altered_athlete
+        )
+        assert (
+            athlete_edit.get("detail", None)
+            == f"Athlete ID: '{athlete_id}' does not exist."
+        )
+        athlete_delete = authenticated_api_user.delete_athlete(athlete_id=athlete_id)
+        assert (
+            athlete_delete.get("detail", None)
+            == f"Athlete ID: '{athlete_id}' does not exist."
+        )
 
     def test_create_athlete_authenticated_wrong_fields(
         self, mock_athlete, authenticated_api_user
     ):
-        """Ensures an error messgae is given when the wrong fields are supplied. This should also work for the edit method."""
+        """Ensures an error messgae is given when the wrong fields are supplied.
+
+        This should also work for the edit method.
+        """
         mock_athlete["gender"] = "male"
         with pytest.raises(TypeError) as excinfo:
             authenticated_api_user.create_athlete(**mock_athlete)

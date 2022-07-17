@@ -1,10 +1,7 @@
 """Tests LifterAPI methods."""
 
 import pytest
-from lifter_api.utils.exceptions import (
-    TokenNotProvidedError,
-    TokenNotValidError,
-)
+from lifter_api.utils.exceptions import TokenNotProvidedError
 
 
 @pytest.mark.usefixtures("mock_data")
@@ -13,19 +10,37 @@ class TestLiftMixin:
 
     def test_lifts(self, mock_data, mock_lift, unauthenticated_api_user):
         """Provides lifts for a competition."""
-        lifts = unauthenticated_api_user.lifts(
+        response = unauthenticated_api_user.lifts(
             competition_id=mock_data["competition_id"],
         )
-        assert lifts["count"] == 1
-        assert float(lifts["results"][0]["bodyweight"]) == mock_lift["bodyweight"]
+        assert response["count"] == 1
+        assert float(response["results"][0]["bodyweight"]) == mock_lift["bodyweight"]
+
+    def test_lifts_wrong_competition_id(self, unauthenticated_api_user):
+        """Wrong competition id provided."""
+        competition_id = "Wrong_ID"
+        response = unauthenticated_api_user.lifts(competition_id=competition_id)
+        assert (
+            response.get("detail")
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
 
     def test_get_lift(self, mock_data, mock_lift, unauthenticated_api_user):
-        """Provides detail lifts view for particular lift (rarely used?)."""
-        lift = unauthenticated_api_user.get_lift(
+        """Provide detail lifts view for particular lift (rarely used?)."""
+        response = unauthenticated_api_user.get_lift(
             competition_id=mock_data["competition_id"],
             lift_id=mock_data["lift_id"],
         )
-        assert float(lift["bodyweight"]) == mock_lift["bodyweight"]
+        assert float(response["bodyweight"]) == mock_lift["bodyweight"]
+
+    def test_get_lift_wrong_lift_id(self, mock_data, unauthenticated_api_user):
+        """Lift ID does not exist."""
+        lift_id = "Wrong_ID"
+        response = unauthenticated_api_user.get_lift(
+            competition_id=mock_data["competition_id"],
+            lift_id=lift_id,
+        )
+        assert response.get("detail") == f"Lift ID: '{lift_id}' does not exist."
 
     def test_create_lift_unauthenticated(
         self, unauthenticated_api_user, mock_lift, mock_data
@@ -57,20 +72,6 @@ class TestLiftMixin:
             unauthenticated_api_user.delete_lift(
                 competition_id=mock_data["competition_id"],
                 lift_id=mock_data["lift_id"],
-            )
-        assert "error" in str(excinfo.value)
-
-    def test_create_lift_wrongtoken(self, mock_lift, mock_data, wrongtoken_api_user):
-        """The token is not valid.
-
-        It is assumed this will work for edit and
-        delete.
-        """
-        with pytest.raises(TokenNotValidError) as excinfo:
-            wrongtoken_api_user.create_lift(
-                competition_id=mock_data["competition_id"],
-                athlete_id=mock_data["athlete_id"],
-                **mock_lift,
             )
         assert "error" in str(excinfo.value)
 
@@ -119,12 +120,30 @@ class TestLiftMixin:
             competition_id=mock_data["competition_id"],
             lift_id=lift_id,
         )
-        assert deleted_competition.get("detail") == "Lift does not exist."
+        assert (
+            deleted_competition.get("detail") == f"Lift ID: '{lift_id}' does not exist."
+        )
+
+    def test_lifts_wrong_ids(
+        self,
+        authenticated_api_user,
+        mock_lift,
+    ):
+        """Wrong IDs."""
+        athlete_id = "WrongAthleteID"
+        competition_id = "WrongCompetitionID"
+        response = authenticated_api_user.create_lift(
+            athlete_id=athlete_id, competition_id=competition_id, **mock_lift
+        )
+        assert (
+            response.get("detail")
+            == f"Athlete ID: '{athlete_id}' does not exist. Competition ID: '{competition_id}' does not exist."
+        )
 
     def test_create_lift_authenticated_wrong_fields(
         self, authenticated_api_user, mock_lift, mock_data
     ):
-        """Ensures an error messgae is given when the wrong fields are supplied. This should also work for the edit method."""
+        """Ensures an error message is given when the wrong fields are supplied. This should also work for the edit method."""
         mock_lift["unknown"] = "fake"
         with pytest.raises(TypeError) as excinfo:
             authenticated_api_user.create_lift(

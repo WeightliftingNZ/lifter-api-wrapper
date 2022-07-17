@@ -3,10 +3,10 @@
 import requests
 
 from ..utils.defaults import COMPETITION_FIELDS
-from ..utils.exceptions import NotAllowedError
 from ..utils.helpers import verify_date, verify_edit_kwargs
-from ..utils.types import CompetitionList
+from ..utils.types import CompetitionDetail, CompetitionList
 from .base import BaseMixin
+from .decorators import _check_id
 
 
 class CompetitionMixin(BaseMixin):
@@ -25,23 +25,23 @@ class CompetitionMixin(BaseMixin):
         response.raise_for_status()
         return response.json()
 
-    def get_competition(self, competition_id: str) -> dict[str, str | int]:
+    def get_competition(
+        self, competition_id: str
+    ) -> CompetitionDetail | dict[str, str]:
         """Get detail of an existing competition and it also includes session and lifts.
 
         Args:
             competition_id (str): Competition ID.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
-           dict[str : str | int ]: Data for the competition, including session information and lifts. Will also return if competition does not exist.
+           Union[CompetitionDetail, dict[str, str]]: Data for the competition
+           and lifts.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}"
         )
         if response.status_code == 404:
-            return {"detail": "Competition does not exist."}
+            return {"detail": f"Competition ID: '{competition_id}' does not exist."}
         response.raise_for_status()
         return response.json()
 
@@ -51,7 +51,7 @@ class CompetitionMixin(BaseMixin):
         date_end: str,
         location: str,
         competition_name: str,
-    ) -> dict[str, str]:
+    ) -> CompetitionDetail:
         """Create a competition.
 
         Args:
@@ -60,11 +60,8 @@ class CompetitionMixin(BaseMixin):
             location (str): Location of the competition.
             competition_name (str): The name of the competition.
 
-        Raises:
-            NotAllowedError: Status error.
-
         Returns:
-            dict[str, str]: Created competition information.
+            CompetitionDetail: Created competition information.
         """
         response = requests.post(
             f"{self._url}/{self._version}/competitions",
@@ -77,24 +74,22 @@ class CompetitionMixin(BaseMixin):
             },
         )
         response.raise_for_status()
-        if response.status_code not in [201, 403, 401]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
         return response.json()
 
-    def edit_competition(self, competition_id: str, **kwargs) -> dict[str, str]:
+    @_check_id
+    def edit_competition(
+        self, competition_id: str, **kwargs
+    ) -> CompetitionDetail | dict[str, str]:
         """Edit an existing competition.
 
         Args:
             competition_id (str): Competition ID.
-            **kwargs: date_start (str), date_end (str), location (str), competition_name (str).
-
-        Raises:
-            NotAllowedError: Status error.
+            **kwargs: date_start (str), date_end (str), location (str),
+            competition_name (str).
 
         Returns:
-            dict[str, str]: Return competition information. Will also return if competition does not exist.
+            Union[CompetitionDetail, dict[str, str]]: Return competition
+            information. Will also return if competition does not exist.
         """
         verify_edit_kwargs(kwargs, COMPETITION_FIELDS)
         response = requests.patch(
@@ -103,24 +98,14 @@ class CompetitionMixin(BaseMixin):
             json=kwargs,
         )
         response.raise_for_status()
-        if response.status_code not in [200, 403, 401, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
-        if response.status_code == 404 and self.get_competition(
-            competition_id=competition_id
-        ):
-            self.get_competition(competition_id=competition_id)
         return response.json()
 
+    @_check_id
     def delete_competition(self, competition_id: str) -> dict[str, str]:
         """Delete a competition.
 
         Args:
             competition_id (str): Competition ID.
-
-        Raises:
-            NotAllowedError: Status error.
 
         Returns:
             dict[str, str]: Returning information about deleted competition. Will also return if the competition does not exist.
@@ -129,15 +114,5 @@ class CompetitionMixin(BaseMixin):
             f"{self._url}/{self._version}/competitions/{competition_id}",
             headers=self._provide_authorization_header(),
         )
-        if response.status_code not in [200, 204, 403, 404]:
-            raise NotAllowedError(
-                message=f"status code returned: {response.status_code}"
-            )
-        if response.status_code == 404 and self.get_competition(
-            competition_id=competition_id
-        ):
-            self.get_competition(competition_id=competition_id)
-        if response.status_code == 403:
-            return response.json()
         response.raise_for_status()
-        return {"detail": "Competition entry deleted."}
+        return {"detail": f"Competition ID: '{competition_id}' entry deleted."}

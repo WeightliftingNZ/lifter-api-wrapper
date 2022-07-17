@@ -1,10 +1,7 @@
 """Test Competition methods."""
 
 import pytest
-from lifter_api.utils.exceptions import (
-    TokenNotProvidedError,
-    TokenNotValidError,
-)
+from lifter_api.utils.exceptions import TokenNotProvidedError
 
 
 @pytest.mark.usefixtures("mock_data")
@@ -61,16 +58,6 @@ class TestCompetitionMixin:
             unauthenticated_api_user.delete_competition(mock_data["competition_id"])
         assert "error" in str(excinfo.value)
 
-    def test_create_competition_wrongtoken(self, mock_competition, wrongtoken_api_user):
-        """The token is not valid.
-
-        It is assumed this will work for edit and
-        delete.
-        """
-        with pytest.raises(TokenNotValidError) as excinfo:
-            wrongtoken_api_user.create_competition(**mock_competition)
-        assert "error" in str(excinfo.value)
-
     def test_create_edit_delete_competition_authenticated(
         self,
         authenticated_api_user,
@@ -86,17 +73,50 @@ class TestCompetitionMixin:
         created_competition = authenticated_api_user.get_competition(competition_id)
         assert created_competition["location"] == mock_competition["location"]
 
-        # editing athlete
+        # editing competition
         authenticated_api_user.edit_competition(
             competition_id=competition_id, **mock_altered_competition
         )
         edited_competition = authenticated_api_user.get_competition(competition_id)
         assert edited_competition["location"] == mock_altered_competition["location"]
 
-        # deleting athlete
+        # deleting competition
         authenticated_api_user.delete_competition(competition_id)
         deleted_competition = authenticated_api_user.get_competition(competition_id)
-        assert deleted_competition.get("detail") == "Competition does not exist."
+        assert (
+            deleted_competition.get("detail")
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
+
+    def test_competition_wrong_id(
+        self,
+        unauthenticated_api_user,
+        authenticated_api_user,
+        mock_altered_competition,
+    ):
+        """Return does not exist if ID is not valid."""
+        competition_id = "doesnotexist_id"
+        competition_details = unauthenticated_api_user.get_competition(
+            competition_id=competition_id
+        )
+        assert (
+            competition_details.get("detail", None)
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
+        competition_edit = authenticated_api_user.edit_competition(
+            competition_id=competition_id, **mock_altered_competition
+        )
+        assert (
+            competition_edit.get("detail", None)
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
+        competition_delete = authenticated_api_user.delete_competition(
+            competition_id=competition_id
+        )
+        assert (
+            competition_delete.get("detail", None)
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
 
     def test_create_competition_authenticated_wrong_fields(
         self, authenticated_api_user, mock_competition

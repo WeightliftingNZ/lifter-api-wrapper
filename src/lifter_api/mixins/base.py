@@ -26,6 +26,14 @@ class BaseMixin:
         self._auth_token = auth_token
         self.__access_token = None
 
+        # check if parameters are valid
+        # `_url` and `_version`
+        response = requests.get(f"{self._url}/{self._version}")
+        response.raise_for_status()
+        # `_auth_token`
+        if self._auth_token is not None:
+            self._obtain_access_token()
+
     def _verify_access_token(self) -> bool:
         """Check if the access token is true and valid.
 

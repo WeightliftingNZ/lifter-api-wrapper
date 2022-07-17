@@ -2,6 +2,7 @@
 
 import os
 from datetime import datetime
+from typing import Iterable
 
 from .defaults import LIVE_URL, TEST_URL
 from .exceptions import (
@@ -19,7 +20,7 @@ def load_url():
 
 
 def verify_create_kwargs(
-    input_fields: dict[str, str], required_fields: list[str]
+    input_fields: dict[str, str], required_fields: Iterable[str]
 ) -> None:
     """Verify if the create kwargs are valid.
 
@@ -38,7 +39,7 @@ def verify_create_kwargs(
 
 
 def verify_edit_kwargs(
-    input_fields: dict[str, str], required_fields: list[str]
+    input_fields: dict[str, str], required_fields: Iterable[str]
 ) -> None:
     """Verify the kwargs for a function have been incorrectly inputted.
 
@@ -50,10 +51,10 @@ def verify_edit_kwargs(
         MissingOrExtraValuesError: error thrown if the input_field is not inside a required_field.
     """
     if not input_fields:
-        raise MissingOrExtraValuesError(message="No values provided")
+        raise MissingOrExtraValuesError(message="No values provided.")
     unknown_keys = [key for key in input_fields if key not in required_fields]
     if unknown_keys:
-        raise MissingOrExtraValuesError(message=f"{unknown_keys=}")
+        raise MissingOrExtraValuesError(message=f"{unknown_keys=}.")
 
 
 def verify_date(input_date: str) -> str:
@@ -113,7 +114,7 @@ def verify_lifts(
                 # if lift is made
                 # the next weight must be greater than previous, unless it's DNA
                 raise InvalidLiftsError(
-                    message=f"Lifts cannot be lower or same than previous if the lift is a good lift. CHECK: {DICT_PLACING[i+1]} lifts."
+                    message=f" Lifts cannot be less than equal to previous. CHECK: {DICT_PLACING[i+1]} lifts."
                 )
             if (
                 lift[0] == "NOLIFT"
@@ -123,6 +124,6 @@ def verify_lifts(
                 # if lift is a no life
                 # the next weight must be greater than or equal to the previous unless it's a DNA
                 raise InvalidLiftsError(
-                    message=f"Lifts cannot be less than previous lift. CHECK {DICT_PLACING[i+1]} lifts."
+                    message=f"Lifts cannot be less than previous lift. CHECK: {DICT_PLACING[i+1]} lifts."
                 )
     return True
