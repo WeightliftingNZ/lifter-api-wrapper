@@ -4,7 +4,7 @@ import requests
 
 from ..utils.defaults import COMPETITION_FIELDS
 from ..utils.helpers import verify_date, verify_edit_kwargs
-from ..utils.types import CompetitionDetail, CompetitionList
+from ..utils.types import CompetitionDetail, CompetitionList, DetailResponse
 from .base import BaseMixin
 from .decorators import _check_id
 
@@ -19,29 +19,34 @@ class CompetitionMixin(BaseMixin):
             page (int): The page number if there is pagination. Defaults to 1.
 
         Returns:
-            CompetitionList: List of competition. Also, there will be pagination information.
+            CompetitionList: List of competition. Also, there will be
+            pagination information.
         """
-        response = requests.get(f"{self._url}/{self._version}/competitions?page={page}")
+        response = requests.get(
+            f"{self._url}/{self._version}/competitions?page={page}"
+        )
         response.raise_for_status()
         return response.json()
 
     def get_competition(
         self, competition_id: str
-    ) -> CompetitionDetail | dict[str, str]:
+    ) -> CompetitionDetail | DetailResponse:
         """Get detail of an existing competition and it also includes session and lifts.
 
         Args:
             competition_id (str): Competition ID.
 
         Returns:
-           Union[CompetitionDetail, dict[str, str]]: Data for the competition
+           CompetitionDetail | DetailResponse: Data for the competition
            and lifts.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}"
         )
         if response.status_code == 404:
-            return {"detail": f"Competition ID: '{competition_id}' does not exist."}
+            return {
+                "detail": f"Competition ID: '{competition_id}' does not exist."
+            }
         response.raise_for_status()
         return response.json()
 
@@ -79,7 +84,7 @@ class CompetitionMixin(BaseMixin):
     @_check_id
     def edit_competition(
         self, competition_id: str, **kwargs
-    ) -> CompetitionDetail | dict[str, str]:
+    ) -> CompetitionDetail | DetailResponse:
         """Edit an existing competition.
 
         Args:
@@ -88,7 +93,7 @@ class CompetitionMixin(BaseMixin):
             competition_name (str).
 
         Returns:
-            Union[CompetitionDetail, dict[str, str]]: Return competition
+            CompetitionDetail | DetailResponse: Return competition
             information. Will also return if competition does not exist.
         """
         verify_edit_kwargs(kwargs, COMPETITION_FIELDS)
@@ -101,14 +106,14 @@ class CompetitionMixin(BaseMixin):
         return response.json()
 
     @_check_id
-    def delete_competition(self, competition_id: str) -> dict[str, str]:
+    def delete_competition(self, competition_id: str) -> DetailResponse:
         """Delete a competition.
 
         Args:
             competition_id (str): Competition ID.
 
         Returns:
-            dict[str, str]: Returning information about deleted competition. Will also return if the competition does not exist.
+            DetailResponse: Returning information about deleted competition. Will also return if the competition does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/competitions/{competition_id}",

@@ -13,13 +13,15 @@ class TestLiftMixin:
         response = unauthenticated_api_user.lifts(
             competition_id=mock_data["competition_id"],
         )
-        assert response["count"] == 1
-        assert float(response["results"][0]["bodyweight"]) == mock_lift["bodyweight"]
+        assert len(response) == 1
+        assert float(response[0]["bodyweight"]) == mock_lift["bodyweight"]
 
     def test_lifts_wrong_competition_id(self, unauthenticated_api_user):
         """Wrong competition id provided."""
         competition_id = "Wrong_ID"
-        response = unauthenticated_api_user.lifts(competition_id=competition_id)
+        response = unauthenticated_api_user.lifts(
+            competition_id=competition_id
+        )
         assert (
             response.get("detail")
             == f"Competition ID: '{competition_id}' does not exist."
@@ -40,7 +42,9 @@ class TestLiftMixin:
             competition_id=mock_data["competition_id"],
             lift_id=lift_id,
         )
-        assert response.get("detail") == f"Lift ID: '{lift_id}' does not exist."
+        assert (
+            response.get("detail") == f"Lift ID: '{lift_id}' does not exist."
+        )
 
     def test_create_lift_unauthenticated(
         self, unauthenticated_api_user, mock_lift, mock_data
@@ -66,7 +70,9 @@ class TestLiftMixin:
             )
         assert "error" in str(excinfo.value)
 
-    def test_delete_lift_unauthenticated(self, unauthenticated_api_user, mock_data):
+    def test_delete_lift_unauthenticated(
+        self, unauthenticated_api_user, mock_data
+    ):
         """Unable to delete lift data as unauthenticated and will return exception as no auth_token provided."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
             unauthenticated_api_user.delete_lift(
@@ -109,7 +115,9 @@ class TestLiftMixin:
             competition_id=mock_data["competition_id"],
             lift_id=lift_id,
         )
-        assert float(edited_lift["bodyweight"]) == mock_altered_lift["bodyweight"]
+        assert (
+            float(edited_lift["bodyweight"]) == mock_altered_lift["bodyweight"]
+        )
 
         # deleting athlete
         authenticated_api_user.delete_lift(
@@ -121,7 +129,8 @@ class TestLiftMixin:
             lift_id=lift_id,
         )
         assert (
-            deleted_competition.get("detail") == f"Lift ID: '{lift_id}' does not exist."
+            deleted_competition.get("detail")
+            == f"Lift ID: '{lift_id}' does not exist."
         )
 
     def test_lifts_wrong_ids(

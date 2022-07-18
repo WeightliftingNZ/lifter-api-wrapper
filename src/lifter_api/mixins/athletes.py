@@ -5,7 +5,7 @@ import requests
 from ..utils.defaults import ATHLETE_FIELDS
 from ..utils.exceptions import NotAllowedError
 from ..utils.helpers import verify_edit_kwargs
-from ..utils.types import AthleteDetail, AthleteList
+from ..utils.types import AthleteDetail, AthleteList, DetailResponse
 from .base import BaseMixin
 from .decorators import _check_id
 
@@ -16,7 +16,7 @@ class AthleteMixin(BaseMixin):
     def athletes(
         self,
         page: int | None = 1,
-    ) -> dict[str, str | int | None | AthleteList]:
+    ) -> AthleteList:
         """List all athletes.
 
         Args:
@@ -24,23 +24,27 @@ class AthleteMixin(BaseMixin):
             Defaults to page 1.
 
         Returns:
-            dict[str, str | int | None | AthleteList]: List of athletes as well
+            AthleteList: List of athletes as well
             as page information.
         """
-        response = requests.get(f"{self._url}/{self._version}/athletes?page={page}")
+        response = requests.get(
+            f"{self._url}/{self._version}/athletes?page={page}"
+        )
         response.raise_for_status()
         return response.json()
 
-    def get_athlete(self, athlete_id: str) -> AthleteDetail | dict[str, str]:
+    def get_athlete(self, athlete_id: str) -> AthleteDetail | DetailResponse:
         """Get information about an athlete.
 
         Args:
             athlete_id (str): Athlete ID.
 
         Returns:
-            Union[AthleteDetail | dict[str, str]]: Athlete details including lifts in competitions.
+            AthleteDetail | DetailResponse : Athlete details including lifts in competitions.
         """
-        response = requests.get(f"{self._url}/{self._version}/athletes/{athlete_id}")
+        response = requests.get(
+            f"{self._url}/{self._version}/athletes/{athlete_id}"
+        )
         if response.status_code == 404:
             return {"detail": f"Athlete ID: '{athlete_id}' does not exist."}
         response.raise_for_status()
@@ -52,7 +56,7 @@ class AthleteMixin(BaseMixin):
         page: int = 1,
         ordering: str = "last_name",
         ascending: bool = True,
-    ) -> dict[str, str | int | None | AthleteList]:
+    ) -> AthleteList:
         """Search for an athlete.
 
         Args:
@@ -65,7 +69,7 @@ class AthleteMixin(BaseMixin):
             NotAllowedError: The ordering was inputted incorrectly.
 
         Returns:
-            dict[str, str | int | None | AthleteList]: Search results of athletes as well as page information.
+            AthleteList: Search results of athletes as well as page information.
         """
         if ordering not in ["last_name", "first_name"]:
             raise NotAllowedError(
@@ -103,7 +107,9 @@ class AthleteMixin(BaseMixin):
         return response.json()
 
     @_check_id
-    def edit_athlete(self, athlete_id: str, **kwargs) -> AthleteDetail | dict[str, str]:
+    def edit_athlete(
+        self, athlete_id: str, **kwargs
+    ) -> AthleteDetail | DetailResponse:
         """Edit an existing athlete.
 
         Args:
@@ -111,7 +117,7 @@ class AthleteMixin(BaseMixin):
             **kwargs: first_name (str), last_name(str), yearborn (int).
 
         Returns:
-            dict[str, str | int]: Information about edited athlete.
+            AthleteDetail | DetailResponse: Information about edited athlete.
         """
         verify_edit_kwargs(kwargs, ATHLETE_FIELDS)
         response = requests.patch(
@@ -123,14 +129,14 @@ class AthleteMixin(BaseMixin):
         return response.json()
 
     @_check_id
-    def delete_athlete(self, athlete_id: str) -> dict[str, str]:
+    def delete_athlete(self, athlete_id: str) -> DetailResponse:
         """Delete an existing athlete.
 
         Args:
             athlete_id (str): Athlete ID.
 
         Returns:
-            dict[str, str]: Information about deleted athlete. Will also return if athlete does not exist.
+            DetailResponse: Information about deleted athlete. Will also return if athlete does not exist.
         """
         response = requests.delete(
             f"{self._url}/{self._version}/athletes/{athlete_id}",

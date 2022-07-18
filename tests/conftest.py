@@ -134,9 +134,13 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
         athletes_response["next"], pretest_athletes
     )
 
-    competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
+    competitions_response = requests.get(
+        f"{URL}/{VERSION}/competitions"
+    ).json()
     competitions = competitions_response["results"]
-    pretest_competitions = [competition["reference_id"] for competition in competitions]
+    pretest_competitions = [
+        competition["reference_id"] for competition in competitions
+    ]
     # setting through pagination
     pretest_competitions = _step_through_pagination(
         competitions_response["next"], pretest_competitions
@@ -215,7 +219,9 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
         post_athletes_response["next"], posttest_athletes
     )
 
-    post_competitions_response = requests.get(f"{URL}/{VERSION}/competitions").json()
+    post_competitions_response = requests.get(
+        f"{URL}/{VERSION}/competitions"
+    ).json()
     post_competitions = post_competitions_response["results"]
     posttest_competitions = [
         competition["reference_id"] for competition in post_competitions
@@ -225,7 +231,9 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
     )
 
     new_athletes = [
-        athlete for athlete in posttest_athletes if athlete not in pretest_athletes
+        athlete
+        for athlete in posttest_athletes
+        if athlete not in pretest_athletes
     ]
     new_competitions = [
         competition

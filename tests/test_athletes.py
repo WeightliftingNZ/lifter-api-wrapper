@@ -22,27 +22,26 @@ class TestAthleteMixin:
         unauthenticated_api_user,
     ):
         """Able to return athlete detail based on ID."""
-        athlete_details = unauthenticated_api_user.get_athlete(mock_data["athlete_id"])
+        athlete_details = unauthenticated_api_user.get_athlete(
+            mock_data["athlete_id"]
+        )
         assert athlete_details["yearborn"] == mock_athlete["yearborn"]
 
     def test_find_athlete(self, mock_athlete, unauthenticated_api_user):
         """Able to search for an athlete."""
 
         def _get_athlete_search(
-            athlete_search: dict[str, str | int | None | AthleteList],
+            athlete_search: AthleteList,
         ) -> list:
             """Step through pages, recursively.
 
             Args:
-                athlete_search (dict[str, str | int | None | AthleteList]):
+                athlete_search (AthleteList):
                 search term.
 
             Returns:
                 list: list of athlete first names.
             """
-            athlete_first_name.extend(
-                [athlete["first_name"] for athlete in athlete_search["results"]]
-            )
             next_page = athlete_search["next"]
             if next_page:
                 params = next_page.split("/")[-1].split("&")
@@ -53,24 +52,26 @@ class TestAthleteMixin:
                     search=f"{mock_athlete['first_name']} {mock_athlete['last_name']}",
                 )
                 _get_athlete_search(new_athlete_search)
-            return athlete_first_name
+            return athletes
 
         athlete_search = unauthenticated_api_user.find_athlete(
             mock_athlete["first_name"] + " " + mock_athlete["last_name"]
         )
         assert athlete_search["count"] > 0
 
-        athlete_first_name = [
+        athletes = [
             athlete["first_name"] for athlete in athlete_search["results"]
         ]
 
-        athlete_first_name = _get_athlete_search(athlete_search)
-        assert mock_athlete["first_name"] in athlete_first_name
+        athletes.extend(athlete_search["results"])
+        assert mock_athlete["first_name"] in athletes
 
     @pytest.mark.parametrize(
         "test_input,expected",
         [
-            pytest.param({"search": "DoesNotExist"}, does_not_raise(), id="No Search"),
+            pytest.param(
+                {"search": "DoesNotExist"}, does_not_raise(), id="No Search"
+            ),
             pytest.param(
                 {"search": "nothing", "ordering": "nothing"},
                 pytest.raises(NotAllowedError),
@@ -83,7 +84,9 @@ class TestAthleteMixin:
     ):
         """Athlete search input."""
         with expected:
-            athlete_search = unauthenticated_api_user.find_athlete(**test_input)
+            athlete_search = unauthenticated_api_user.find_athlete(
+                **test_input
+            )
             assert athlete_search["count"] == 0
 
     def test_create_athlete_unauthenticated(
@@ -104,7 +107,9 @@ class TestAthleteMixin:
             )
         assert "error" in str(excinfo.value)
 
-    def test_delete_athlete_unauthenticated(self, mock_data, unauthenticated_api_user):
+    def test_delete_athlete_unauthenticated(
+        self, mock_data, unauthenticated_api_user
+    ):
         """Cannot delete athelete as unauthenticated."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
             unauthenticated_api_user.delete_athlete(mock_data["athlete_id"])
@@ -143,7 +148,9 @@ class TestAthleteMixin:
     ):
         """Return does not exist if ID is not valid."""
         athlete_id = "doesnotexist_id"
-        athlete_details = unauthenticated_api_user.get_athlete(athlete_id=athlete_id)
+        athlete_details = unauthenticated_api_user.get_athlete(
+            athlete_id=athlete_id
+        )
         assert (
             athlete_details.get("detail", None)
             == f"Athlete ID: '{athlete_id}' does not exist."
@@ -155,7 +162,9 @@ class TestAthleteMixin:
             athlete_edit.get("detail", None)
             == f"Athlete ID: '{athlete_id}' does not exist."
         )
-        athlete_delete = authenticated_api_user.delete_athlete(athlete_id=athlete_id)
+        athlete_delete = authenticated_api_user.delete_athlete(
+            athlete_id=athlete_id
+        )
         assert (
             athlete_delete.get("detail", None)
             == f"Athlete ID: '{athlete_id}' does not exist."

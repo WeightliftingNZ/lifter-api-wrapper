@@ -1,7 +1,7 @@
 """Decorators for mixins."""
 
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable
 
 
 def _check_id(func: Callable) -> Callable:
@@ -17,9 +17,9 @@ def _check_id(func: Callable) -> Callable:
 
         athlete_id = kwargs.get("athlete_id")
         if athlete_id and func.__name__ != "get_athlete":
-            not_exists["athlete"] = self.get_athlete(athlete_id=athlete_id).get(
-                "detail", False
-            )
+            not_exists["athlete"] = self.get_athlete(
+                athlete_id=athlete_id
+            ).get("detail", False)
 
         competition_id = kwargs.get("competition_id")
         if competition_id and func.__name__ != "get_competition":

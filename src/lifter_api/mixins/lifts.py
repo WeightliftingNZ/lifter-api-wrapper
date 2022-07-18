@@ -4,7 +4,7 @@ import requests
 
 from ..utils.defaults import LIFT_FIELDS
 from ..utils.helpers import verify_edit_kwargs, verify_lifts
-from ..utils.types import LiftReturn, LiftSet
+from ..utils.types import DetailResponse, LiftDetail
 from . import AthleteMixin, CompetitionMixin
 from .decorators import _check_id
 
@@ -13,9 +13,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
     """Lift methods."""
 
     @_check_id
-    def lifts(
-        self, competition_id: str
-    ) -> dict[str, str | int | None | LiftSet] | dict[str, str]:
+    def lifts(self, competition_id: str) -> list[LiftDetail] | DetailResponse:
         """Provide lifts and competitions.
 
         Args:
@@ -25,7 +23,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
             NotAllowedError: Status Error.
 
         Returns:
-            Union[dict[str, str | int | None | LiftSet], dict[str, str]]: Lift
+            list[LiftDetail] | DetailResponse: Lift
             data plus pagination information. Will also return if the session
             or competition does not exist.
         """
@@ -38,7 +36,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
     @_check_id
     def get_lift(
         self, competition_id: str, lift_id: str
-    ) -> dict[str, str] | dict[str, str | int] | LiftReturn:
+    ) -> LiftDetail | DetailResponse:
         """Get particular lift data.
 
         Args:
@@ -46,9 +44,8 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
             lift_id (str): Lift ID
 
         Returns:
-            Union[dict[str, str], dict[str, str | int ], LiftReturn]: Lift
-            information. Will also return if session or compeitition does not
-            exist.
+            LiftDetail | DetailResponse: Lift
+            information. Will also return if competition does not exist.
         """
         response = requests.get(
             f"{self._url}/{self._version}/competitions/{competition_id}/lifts/{lift_id}"
@@ -80,7 +77,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
         session_number: int,
         team: str,
         lottery_number: int,
-    ) -> LiftReturn | dict[str, str]:
+    ) -> LiftDetail | DetailResponse:
         """Create a lift in an existing session.
 
         Args:
@@ -110,7 +107,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
             NotAllowedError: Status error.
 
         Returns:
-            Union[LiftReturn, dict[str, str]]: Information about created lift. Will also return if athlete, session or competition does not exist.
+            LiftDetail | DetailResponse: Information about created lift. Will also return if athlete, session or competition does not exist.
         """
         # validate lifts
         verify_lifts(
@@ -154,7 +151,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
     @_check_id
     def edit_lift(
         self, competition_id: str, lift_id: str, **kwargs
-    ) -> dict[str, str | int] | LiftReturn:
+    ) -> LiftDetail | DetailResponse:
         """Edit an existing lift.
 
             Args:
@@ -162,9 +159,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
                 lift_id (int): lift id
 
             Returns:
-                dict[str, str] | dict[str, str | int ] | dict[
-            str, str | int | LiftSet
-        ]: edited lift information and return messages if competition id is
+                LiftDetail | DetailResponse: edited lift information and return messages if competition id is
         invalid
         """
         verify_edit_kwargs(kwargs, LIFT_FIELDS)
@@ -177,9 +172,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
         return response.json()
 
     @_check_id
-    def delete_lift(
-        self, competition_id: str, lift_id: str
-    ) -> dict[str, str | int] | LiftReturn:
+    def delete_lift(self, competition_id: str, lift_id: str) -> DetailResponse:
         """Delete an existing lift.
 
         Args:
@@ -187,7 +180,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
             lift_id (int): Lift ID.
 
         Returns:
-            Union[dict[str, str] | LiftReturn]:
+            DetailResponse:
             Information about deleted lift.
             Will also mention if session or competition does not exist.
         """

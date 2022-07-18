@@ -1,8 +1,8 @@
 """Helper Functions for Lifter API."""
 
 import os
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 from .defaults import LIVE_URL, TEST_URL
 from .exceptions import (
@@ -35,7 +35,9 @@ def verify_create_kwargs(
     unknown_keys = [key for key in input_fields if key not in required_fields]
     missing_keys = [key for key in required_fields if key not in input_fields]
     if any([unknown_keys, missing_keys]):
-        raise MissingOrExtraValuesError(message=f"{unknown_keys=}\n{missing_keys=}")
+        raise MissingOrExtraValuesError(
+            message=f"{unknown_keys=}\n{missing_keys=}"
+        )
 
 
 def verify_edit_kwargs(

@@ -11,7 +11,10 @@ class TestCompetitionMixin:
     def test_competitions(self, mock_data, unauthenticated_api_user):
         """Able to list all competitions."""
         competitions = unauthenticated_api_user.competitions()
-        assert competitions["count"] == mock_data["pretest_competitions_number"] + 1
+        assert (
+            competitions["count"]
+            == mock_data["pretest_competitions_number"] + 1
+        )
 
     def test_get_competition(
         self,
@@ -55,7 +58,9 @@ class TestCompetitionMixin:
     ):
         """Unable to delete competition as unauthenticated and will return exception as no auth_token provided."""
         with pytest.raises(TokenNotProvidedError) as excinfo:
-            unauthenticated_api_user.delete_competition(mock_data["competition_id"])
+            unauthenticated_api_user.delete_competition(
+                mock_data["competition_id"]
+            )
         assert "error" in str(excinfo.value)
 
     def test_create_edit_delete_competition_authenticated(
@@ -70,19 +75,28 @@ class TestCompetitionMixin:
             **mock_competition
         )
         competition_id = create_competition["reference_id"]
-        created_competition = authenticated_api_user.get_competition(competition_id)
+        created_competition = authenticated_api_user.get_competition(
+            competition_id
+        )
         assert created_competition["location"] == mock_competition["location"]
 
         # editing competition
         authenticated_api_user.edit_competition(
             competition_id=competition_id, **mock_altered_competition
         )
-        edited_competition = authenticated_api_user.get_competition(competition_id)
-        assert edited_competition["location"] == mock_altered_competition["location"]
+        edited_competition = authenticated_api_user.get_competition(
+            competition_id
+        )
+        assert (
+            edited_competition["location"]
+            == mock_altered_competition["location"]
+        )
 
         # deleting competition
         authenticated_api_user.delete_competition(competition_id)
-        deleted_competition = authenticated_api_user.get_competition(competition_id)
+        deleted_competition = authenticated_api_user.get_competition(
+            competition_id
+        )
         assert (
             deleted_competition.get("detail")
             == f"Competition ID: '{competition_id}' does not exist."
