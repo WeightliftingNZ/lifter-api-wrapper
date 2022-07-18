@@ -141,3 +141,6 @@ ansible.log
 
 # pypi
 .pypirc
+
+# Mac
+.DS_Store/

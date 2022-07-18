@@ -11,7 +11,7 @@ def _check_id(func: Callable) -> Callable:
     """
 
     @wraps(func)
-    def wrapper(self, *args, **kwargs) -> None:
+    def wrapper(self, *args, **kwargs) -> dict[str, str] | Callable:
         """Wrap function."""
         not_exists = {}
 
