@@ -19,6 +19,11 @@ repos:
       - id: sort-simple-yaml
       - id: check-yaml
 
+  - repo: http://github.com/asottile/setup-cfg-fmt
+    rev: v1.20.1
+    hooks:
+      - id: setup-cfg-fmt
+
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.4
     hooks:
