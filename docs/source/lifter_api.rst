@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   lifter_api.mixins
    lifter_api.utils
 
 Submodules

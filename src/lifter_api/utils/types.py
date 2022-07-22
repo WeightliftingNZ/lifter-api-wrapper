@@ -79,7 +79,7 @@ class _SubCompetitionList(TypedDict):
     date_start: str
     date_end: str
     location: str
-    competition_name: str
+    name: str
     lifts_count: int
 
 

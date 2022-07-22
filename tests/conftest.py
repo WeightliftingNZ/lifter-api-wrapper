@@ -62,7 +62,7 @@ def mock_competition():
         "date_start": "2022-03-05",
         "date_end": "2022-03-06",
         "location": "Test Location",
-        "competition_name": "Test Competition Name",
+        "name": "Test Competition Name",
     }
     return competition
 

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lifter_api.mixins.lifts &mdash; lifter-api-wrapper  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> lifter-api-wrapper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">lifter_api</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lifter-api-wrapper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lifter_api.mixins.lifts</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for lifter_api.mixins.lifts</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Lift models.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">..utils.defaults</span> <span class="kn">import</span> <span class="n">LIFT_FIELDS</span>
+<span class="kn">from</span> <span class="nn">..utils.helpers</span> <span class="kn">import</span> <span class="n">verify_edit_kwargs</span><span class="p">,</span> <span class="n">verify_lifts</span>
+<span class="kn">from</span> <span class="nn">..utils.types</span> <span class="kn">import</span> <span class="n">DetailResponse</span><span class="p">,</span> <span class="n">LiftDetail</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">AthleteMixin</span><span class="p">,</span> <span class="n">CompetitionMixin</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">_check_id</span>
+
+
+<div class="viewcode-block" id="LiftMixin"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin">[docs]</a><span class="k">class</span> <span class="nc">LiftMixin</span><span class="p">(</span><span class="n">CompetitionMixin</span><span class="p">,</span> <span class="n">AthleteMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Lift methods.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LiftMixin.lifts"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin.lifts">[docs]</a>    <span class="nd">@_check_id</span>
+    <span class="k">def</span> <span class="nf">lifts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">competition_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LiftDetail</span><span class="p">]</span> <span class="o">|</span> <span class="n">DetailResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Provide lifts and competitions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            competition_id (str): Competition ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotAllowedError: Status Error.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[LiftDetail] | DetailResponse: Lift</span>
+<span class="sd">            data plus pagination information. Will also return if the session</span>
+<span class="sd">            or competition does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">/competitions/</span><span class="si">{</span><span class="n">competition_id</span><span class="si">}</span><span class="s2">/lifts&quot;</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LiftMixin.get_lift"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin.get_lift">[docs]</a>    <span class="nd">@_check_id</span>
+    <span class="k">def</span> <span class="nf">get_lift</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">competition_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lift_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LiftDetail</span> <span class="o">|</span> <span class="n">DetailResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get particular lift data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            competition_id (str): Competition ID</span>
+<span class="sd">            lift_id (str): Lift ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            LiftDetail | DetailResponse: Lift</span>
+<span class="sd">            information. Will also return if competition does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">/competitions/</span><span class="si">{</span><span class="n">competition_id</span><span class="si">}</span><span class="s2">/lifts/</span><span class="si">{</span><span class="n">lift_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Lift ID: &#39;</span><span class="si">{</span><span class="n">lift_id</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">}</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LiftMixin.create_lift"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin.create_lift">[docs]</a>    <span class="nd">@_check_id</span>
+    <span class="k">def</span> <span class="nf">create_lift</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">competition_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">athlete_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">snatch_first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">snatch_first_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">snatch_second</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">snatch_second_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">snatch_third</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">snatch_third_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">cnj_first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cnj_first_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">cnj_second</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cnj_second_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">cnj_third</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cnj_third_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bodyweight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">weight_category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">session_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">team</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">lottery_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LiftDetail</span> <span class="o">|</span> <span class="n">DetailResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a lift in an existing session.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            competition_id (str): Competition ID.</span>
+<span class="sd">            athlete_id (str): Athlete ID.</span>
+<span class="sd">            snatch_first (str): Accepts &quot;LIFT&quot;, &quot;NOLIFT&quot;, &quot;DNA&quot;.</span>
+<span class="sd">            snatch_first_weight (int): Weight of the lift.</span>
+<span class="sd">            snatch_second (str): Same as snatch_first.</span>
+<span class="sd">            snatch_second_weight (int): Weight must be same or larger if</span>
+<span class="sd">            previous lift was NOLIFT or even DNA, can be same weight is,</span>
+<span class="sd">            and weights are in kilograms.</span>
+<span class="sd">            snatch_third (str): Same idea as snatch_first.</span>
+<span class="sd">            snatch_third_weight (int): Same as snatch_second_weight.</span>
+<span class="sd">            cnj_first (str): Follow same as snatches.</span>
+<span class="sd">            cnj_first_weight (int): Follows as above.</span>
+<span class="sd">            cnj_second (str): Follows as above.</span>
+<span class="sd">            cnj_second_weight (int): Follows as above.</span>
+<span class="sd">            cnj_third (str): Follows as above.</span>
+<span class="sd">            cnj_third_weight (int): Follows as above.</span>
+<span class="sd">            bodyweight (float): Body weight in kilograms.</span>
+<span class="sd">            weight_category (str): Appropriate weight category.</span>
+<span class="sd">            session_number (int): Session number.</span>
+<span class="sd">            team (str): Team.</span>
+<span class="sd">            lottery_number (int): Determines lift order.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotAllowedError: Status error.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            LiftDetail | DetailResponse: Information about created lift. Will also return if athlete, session or competition does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># validate lifts</span>
+        <span class="n">verify_lifts</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snatch_first</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snatch_first_weight</span><span class="p">)),</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snatch_second</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snatch_second_weight</span><span class="p">)),</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snatch_third</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snatch_third_weight</span><span class="p">)),</span>
+        <span class="p">)</span>
+        <span class="n">verify_lifts</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cnj_first</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cnj_first_weight</span><span class="p">)),</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cnj_second</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cnj_second_weight</span><span class="p">)),</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cnj_third</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cnj_third_weight</span><span class="p">)),</span>
+        <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">/competitions/</span><span class="si">{</span><span class="n">competition_id</span><span class="si">}</span><span class="s2">/lifts&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provide_authorization_header</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;competition&quot;</span><span class="p">:</span> <span class="n">competition_id</span><span class="p">,</span>
+                <span class="s2">&quot;athlete&quot;</span><span class="p">:</span> <span class="n">athlete_id</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_first&quot;</span><span class="p">:</span> <span class="n">snatch_first</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_first_weight&quot;</span><span class="p">:</span> <span class="n">snatch_first_weight</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_second&quot;</span><span class="p">:</span> <span class="n">snatch_second</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_second_weight&quot;</span><span class="p">:</span> <span class="n">snatch_second_weight</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_third&quot;</span><span class="p">:</span> <span class="n">snatch_third</span><span class="p">,</span>
+                <span class="s2">&quot;snatch_third_weight&quot;</span><span class="p">:</span> <span class="n">snatch_third_weight</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_first&quot;</span><span class="p">:</span> <span class="n">cnj_first</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_first_weight&quot;</span><span class="p">:</span> <span class="n">cnj_first_weight</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_second&quot;</span><span class="p">:</span> <span class="n">cnj_second</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_second_weight&quot;</span><span class="p">:</span> <span class="n">cnj_second_weight</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_third&quot;</span><span class="p">:</span> <span class="n">cnj_third</span><span class="p">,</span>
+                <span class="s2">&quot;cnj_third_weight&quot;</span><span class="p">:</span> <span class="n">cnj_third_weight</span><span class="p">,</span>
+                <span class="s2">&quot;bodyweight&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">bodyweight</span><span class="p">),</span>
+                <span class="s2">&quot;weight_category&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">weight_category</span><span class="p">),</span>
+                <span class="s2">&quot;session_number&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">session_number</span><span class="p">),</span>
+                <span class="s2">&quot;team&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">team</span><span class="p">),</span>
+                <span class="s2">&quot;lottery_number&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">lottery_number</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LiftMixin.edit_lift"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin.edit_lift">[docs]</a>    <span class="nd">@_check_id</span>
+    <span class="k">def</span> <span class="nf">edit_lift</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">competition_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lift_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LiftDetail</span> <span class="o">|</span> <span class="n">DetailResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Edit an existing lift.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                competition_id (str): competition id</span>
+<span class="sd">                lift_id (int): lift id</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                LiftDetail | DetailResponse: edited lift information and return messages if competition id is</span>
+<span class="sd">        invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">verify_edit_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">LIFT_FIELDS</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">/competitions/</span><span class="si">{</span><span class="n">competition_id</span><span class="si">}</span><span class="s2">/lifts/</span><span class="si">{</span><span class="n">lift_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provide_authorization_header</span><span class="p">(),</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LiftMixin.delete_lift"><a class="viewcode-back" href="../../../lifter_api.mixins.html#lifter_api.mixins.lifts.LiftMixin.delete_lift">[docs]</a>    <span class="nd">@_check_id</span>
+    <span class="k">def</span> <span class="nf">delete_lift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">competition_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lift_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DetailResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete an existing lift.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            competition_id (str): Competition ID.</span>
+<span class="sd">            lift_id (int): Lift ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DetailResponse:</span>
+<span class="sd">            Information about deleted lift.</span>
+<span class="sd">            Will also mention if session or competition does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">/competitions/</span><span class="si">{</span><span class="n">competition_id</span><span class="si">}</span><span class="s2">/lifts/</span><span class="si">{</span><span class="n">lift_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provide_authorization_header</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Lift ID: &#39;</span><span class="si">{</span><span class="n">lift_id</span><span class="si">}</span><span class="s2">&#39; entry deleted.&quot;</span><span class="p">}</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Shivan Sivakumaran.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

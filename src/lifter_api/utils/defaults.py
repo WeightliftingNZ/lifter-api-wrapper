@@ -7,7 +7,7 @@ VERSION = "v1"
 
 # field required for creation/deletion
 ATHLETE_FIELDS = ["first_name", "last_name", "yearborn"]
-COMPETITION_FIELDS = ["date_start", "date_end", "location", "competition_name"]
+COMPETITION_FIELDS = ["date_start", "date_end", "location", "name"]
 LIFT_FIELDS = [
     "athlete",
     "snatch_first",

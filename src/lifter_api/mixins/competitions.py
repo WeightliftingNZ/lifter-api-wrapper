@@ -55,7 +55,7 @@ class CompetitionMixin(BaseMixin):
         date_start: str,  # date format YYYY-MM-DD
         date_end: str,
         location: str,
-        competition_name: str,
+        name: str,
     ) -> CompetitionDetail:
         """Create a competition.
 
@@ -63,7 +63,7 @@ class CompetitionMixin(BaseMixin):
             date_start (str): Start date of the competition. Format: YYYY-MM-DD.
             date_end (str): End date of the competition. Format: YYYY-MM-DD.
             location (str): Location of the competition.
-            competition_name (str): The name of the competition.
+            name (str): The name of the competition.
 
         Returns:
             CompetitionDetail: Created competition information.
@@ -75,7 +75,7 @@ class CompetitionMixin(BaseMixin):
                 "date_start": verify_date(date_start),
                 "date_end": verify_date(date_end),
                 "location": str(location),
-                "competition_name": str(competition_name),
+                "name": str(name),
             },
         )
         response.raise_for_status()
@@ -90,7 +90,7 @@ class CompetitionMixin(BaseMixin):
         Args:
             competition_id (str): Competition ID.
             **kwargs: date_start (str), date_end (str), location (str),
-            competition_name (str).
+            name (str).
 
         Returns:
             CompetitionDetail | DetailResponse: Return competition

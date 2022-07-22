@@ -1,18 +1,18 @@
 .. lifter-api-wrapper documentation master file, created by
-   sphinx-quickstart on Thu Mar 31 22:03:03 2022.
+   sphinx-quickstart on Fri Jul 22 21:50:15 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 Welcome to lifter-api-wrapper's documentation!
 ==============================================
 
+lifter-api-wrapper, as the name suggests, is a wrapper for lifter-api. The aim is to make it easier to access the API.make it easier to access the API.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules
-
-
+  modules
 
 Indices and tables
 ==================

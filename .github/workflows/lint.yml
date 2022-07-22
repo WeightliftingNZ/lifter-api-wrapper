@@ -1,3 +1,4 @@
+---
 name: Lint
 
 on:
@@ -5,7 +6,7 @@ on:
    - pull_request
 
 jobs:
-  test:
+  lint:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

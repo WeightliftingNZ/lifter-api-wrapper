@@ -25,6 +25,7 @@ match = ".*/.py"
 [tool.mypy]
 mypy_path = "src"
 ignore_missing_imports = true
+exclude = "docs"
 
 [tool.pyright]
 include = ["src"]

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lifter_api.utils.helpers &mdash; lifter-api-wrapper  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> lifter-api-wrapper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">lifter_api</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lifter-api-wrapper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lifter_api.utils.helpers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for lifter_api.utils.helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Helper Functions for Lifter API.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">LIVE_URL</span><span class="p">,</span> <span class="n">TEST_URL</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InvalidDateError</span><span class="p">,</span>
+    <span class="n">InvalidLiftsError</span><span class="p">,</span>
+    <span class="n">MissingOrExtraValuesError</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_url"><a class="viewcode-back" href="../../../lifter_api.utils.html#lifter_api.utils.helpers.load_url">[docs]</a><span class="k">def</span> <span class="nf">load_url</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Load the url based on the environment variable, `LOCAL_DEVELOPMENT`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOCAL_DEVELOPMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">LIVE_URL</span>
+    <span class="k">return</span> <span class="n">TEST_URL</span></div>
+
+
+<div class="viewcode-block" id="verify_create_kwargs"><a class="viewcode-back" href="../../../lifter_api.utils.html#lifter_api.utils.helpers.verify_create_kwargs">[docs]</a><span class="k">def</span> <span class="nf">verify_create_kwargs</span><span class="p">(</span>
+    <span class="n">input_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">required_fields</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Verify if the create kwargs are valid.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_fields (dict[str, str]): This is the input field.</span>
+<span class="sd">        required_fields (dict[str, str]): These are the field required.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        MissingOrExtraValuesError: Returned if input values don&#39;t match the</span>
+<span class="sd">        required values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unknown_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">input_fields</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">]</span>
+    <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_fields</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_fields</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">unknown_keys</span><span class="p">,</span> <span class="n">missing_keys</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="n">MissingOrExtraValuesError</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">unknown_keys</span><span class="si">=}</span><span class="se">\n</span><span class="si">{</span><span class="n">missing_keys</span><span class="si">=}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verify_edit_kwargs"><a class="viewcode-back" href="../../../lifter_api.utils.html#lifter_api.utils.helpers.verify_edit_kwargs">[docs]</a><span class="k">def</span> <span class="nf">verify_edit_kwargs</span><span class="p">(</span>
+    <span class="n">input_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">required_fields</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Verify the kwargs for a function have been incorrectly inputted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_fields (dict[str, str]): this is the input field.</span>
+<span class="sd">        required_fields (dict[str, str]): this is usually the required field, which is set to a constant.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        MissingOrExtraValuesError: error thrown if the input_field is not inside a required_field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">input_fields</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MissingOrExtraValuesError</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;No values provided.&quot;</span><span class="p">)</span>
+    <span class="n">unknown_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">input_fields</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">unknown_keys</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MissingOrExtraValuesError</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">unknown_keys</span><span class="si">=}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verify_date"><a class="viewcode-back" href="../../../lifter_api.utils.html#lifter_api.utils.helpers.verify_date">[docs]</a><span class="k">def</span> <span class="nf">verify_date</span><span class="p">(</span><span class="n">input_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Verify date, ensuring YYYY-MM-DD (e.g. 2022-03-26).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_date (str): date input.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        InvalidDateError: Exception for incorrect date is thrown.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True is returned if the date is correct.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">input_date</span><span class="p">),</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InvalidDateError</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Incorrect date format. Please use YYYY-MM-DD&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_date</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verify_lifts"><a class="viewcode-back" href="../../../lifter_api.utils.html#lifter_api.utils.helpers.verify_lifts">[docs]</a><span class="k">def</span> <span class="nf">verify_lifts</span><span class="p">(</span>
+    <span class="n">lift_1</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">lift_2</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">lift_3</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Validate lifts.</span>
+
+<span class="sd">    Ensures &quot;LIFT&quot;, &quot;NOLIFT&quot;, &quot;DNA&quot; is used for lift status, as well as lift increase</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lift_1 (tuple[str, int]): lift status and weight</span>
+<span class="sd">        lift_2 (tuple[str, int]): lift status and weight</span>
+<span class="sd">        lift_3 (tuple[str, int]): lift status and weight</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        InvalidLiftsError: incorrect lift sequence, or wrong lift_status label used</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if valid lift sequence</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DICT_PLACING</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;1st&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;2nd&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;3rd&quot;</span><span class="p">}</span>
+    <span class="n">lifts</span> <span class="o">=</span> <span class="p">[</span><span class="n">lift_1</span><span class="p">,</span> <span class="n">lift_2</span><span class="p">,</span> <span class="n">lift_3</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lift</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lifts</span><span class="p">):</span>
+        <span class="c1"># lift[0] is lift_status (&quot;LIFT&quot;, &quot;NOLIFT&quot;, &quot;DNA&quot;)</span>
+        <span class="c1"># lift [1] is weight</span>
+        <span class="k">if</span> <span class="n">lift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LIFT&quot;</span><span class="p">,</span> <span class="s2">&quot;NOLIFT&quot;</span><span class="p">,</span> <span class="s2">&quot;DNA&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">InvalidLiftsError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Check lift status must be &#39;LIFT&#39;, &#39;NOLIFT&#39; or &#39;DNA&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">lift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;LIFT&quot;</span>
+                <span class="ow">and</span> <span class="n">lifts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;DNA&quot;</span>
+                <span class="ow">and</span> <span class="n">lift</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lifts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="c1"># if lift is made</span>
+                <span class="c1"># the next weight must be greater than previous, unless it&#39;s DNA</span>
+                <span class="k">raise</span> <span class="n">InvalidLiftsError</span><span class="p">(</span>
+                    <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot; Lifts cannot be less than equal to previous. CHECK: </span><span class="si">{</span><span class="n">DICT_PLACING</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> lifts.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">lift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NOLIFT&quot;</span>
+                <span class="ow">and</span> <span class="n">lifts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;DNA&quot;</span>
+                <span class="ow">and</span> <span class="n">lift</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">lifts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="c1"># if lift is a no life</span>
+                <span class="c1"># the next weight must be greater than or equal to the previous unless it&#39;s a DNA</span>
+                <span class="k">raise</span> <span class="n">InvalidLiftsError</span><span class="p">(</span>
+                    <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Lifts cannot be less than previous lift. CHECK: </span><span class="si">{</span><span class="n">DICT_PLACING</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> lifts.&quot;</span>
+                <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Shivan Sivakumaran.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

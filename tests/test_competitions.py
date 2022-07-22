@@ -26,10 +26,7 @@ class TestCompetitionMixin:
         competition_details = unauthenticated_api_user.get_competition(
             mock_data["competition_id"]
         )
-        assert (
-            competition_details["competition_name"]
-            == mock_competition["competition_name"]
-        )
+        assert competition_details["name"] == mock_competition["name"]
 
     def test_create_competition_unauthenticated(
         self, unauthenticated_api_user, mock_competition

@@ -20,3 +20,12 @@ clean:
 	rm -rf build && \
 	rm -rf dist && \
 	rm -rf lifter_api_wrapper.egg-info
+
+.PHONY: docs
+docs:
+	cd docs && \
+	make html
+
+.PHONY: deploy
+deploy:
+	make build
