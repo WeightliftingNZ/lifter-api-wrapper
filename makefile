@@ -26,6 +26,8 @@ docs:
 	cd docs && \
 	make html
 
+VERSIONTYPE = patch
 .PHONY: deploy
 deploy:
-	make build
+	make docs
+	pipenv run bump2version $(VERSIONTYPE) --verbose --list --allow-dirty

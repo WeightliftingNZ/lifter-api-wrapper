@@ -6,7 +6,27 @@
 Welcome to lifter-api-wrapper's documentation!
 ==============================================
 
-lifter-api-wrapper, as the name suggests, is a wrapper for lifter-api. The aim is to make it easier to access the API.make it easier to access the API.
+lifter-api-wrapper, as the name suggests, is a wrapper for lifter-api. The aim is to make it easier to access the API.
+
+Quick Start
+===========
+
+Install using pip:
+
+.. code-block:: bash
+
+   $ pip install lifter-api-wrapper
+
+And use in your code:
+
+.. code-block:: python
+
+   from lifter_api import LifterAPI
+
+   api = LifterAPI()
+
+
+
 
 .. toctree::
    :maxdepth: 2
