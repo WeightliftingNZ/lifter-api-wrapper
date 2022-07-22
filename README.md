@@ -52,7 +52,7 @@ For local development, you will need to clone the [API from here](https://github
 
 You will need to set a environment variable, `LOCAL_DEVELOPMENT=1` and it's a good idea to put this in the `.env` file. This will means the localhost API will be hit and not the live API.
 
-```
+```bash
 git clone https://github.com/WeightliftingNZ/lifter-api
 
 
@@ -65,4 +65,4 @@ This will run a server and allow you to run tests for this wrapper.
 
 ## Contribution
 
-I'm a one man show at the moment. This is still in development. So, I will be very conservative for now.
+Still early days.
