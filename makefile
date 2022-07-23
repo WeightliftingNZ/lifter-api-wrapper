@@ -30,4 +30,4 @@ VERSIONTYPE = patch
 .PHONY: deploy
 deploy:
 	make docs
-	pipenv run bump2version $(VERSIONTYPE) --verbose --list --allow-dirty
+	pipenv run bump2version $(VERSIONTYPE) --verbose --allow-dirty

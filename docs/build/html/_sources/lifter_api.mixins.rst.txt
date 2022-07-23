@@ -1,7 +1,7 @@
 lifter\_api.mixins package
 ==========================
 
-Submodules
+Submodule
 ----------
 
 lifter\_api.mixins.athletes module

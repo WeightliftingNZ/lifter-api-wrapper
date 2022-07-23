@@ -1,0 +1,61 @@
+tests package
+=============
+
+Submodules
+----------
+
+tests.conftest module
+---------------------
+
+.. automodule:: tests.conftest
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_api module
+----------------------
+
+.. automodule:: tests.test_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_athletes module
+---------------------------
+
+.. automodule:: tests.test_athletes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_competitions module
+-------------------------------
+
+.. automodule:: tests.test_competitions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_helpers module
+--------------------------
+
+.. automodule:: tests.test_helpers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_lifts module
+------------------------
+
+.. automodule:: tests.test_lifts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

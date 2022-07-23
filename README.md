@@ -8,7 +8,7 @@ This is a wrapper written in python in order to access [Lifter API](https://gith
 
 ## Installing and Setting Up
 
-You can install this package using `pip` or your favourite package manager, e.g. `pipenv`, `poetry`, `conda`.
+You can install this package using `pip` or your favourite package manager, e.g. `pipenv`, `poetry`.
 
 ```sh
 pip install lifter-api-wrapper
@@ -50,7 +50,9 @@ lifter_api_version1 = LifterAPI(version="v1", auth_token=os.getenv("API_TOKEN"))
 
 For local development, you will need to clone the [API from here](https://github.com/ChristchurchCityWeightlifting/lifter-api).
 
-You will need to set a environment variable, `LOCAL_DEVELOPMENT=1` and it's a good idea to put this in the `.env` file. This will means the localhost API will be hit and not the live API.
+You will need to set a environment variable, `LOCAL_DEVELOPMENT=1` and it's a good idea to put this in the `.env` file. This will ensure the locally hosted API will be used and not the live API.
+
+The default URL for the locally hosted API is `http://localhost:8000`. Alternatively, you can define the url to your liking: `LifterAPI(url="http://localhost:8001")`.
 
 ```bash
 git clone https://github.com/WeightliftingNZ/lifter-api

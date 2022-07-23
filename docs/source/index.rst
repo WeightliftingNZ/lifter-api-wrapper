@@ -3,15 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to lifter-api-wrapper's documentation!
-==============================================
+Lifter-API-Wrapper Documentation
+================================
 
 lifter-api-wrapper, as the name suggests, is a wrapper for lifter-api. The aim is to make it easier to access the API.
 
 Quick Start
 ===========
 
-Install using pip:
+Install using pip, pipenv, poetry or whatever flavour you like:
 
 .. code-block:: bash
 
@@ -24,9 +24,6 @@ And use in your code:
    from lifter_api import LifterAPI
 
    api = LifterAPI()
-
-
-
 
 .. toctree::
    :maxdepth: 2

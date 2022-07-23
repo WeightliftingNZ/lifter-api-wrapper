@@ -1,4 +1,4 @@
-"""Lifter API Wrapper entry point."""
+"""Lifter API Wrapper main module entry point."""
 
 import logging
 
@@ -12,7 +12,11 @@ logging.basicConfig(
 
 
 class LifterAPI(LiftMixin):
-    """Main class for entry."""
+    """Main class for entry.
+
+    >>> from lifter_api import LifterAPI
+    >>> api = LifterAPI()
+    """
 
     def __init__(
         self,
