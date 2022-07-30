@@ -153,12 +153,13 @@ class TestLiftMixin:
         self, authenticated_api_user, mock_lift, mock_data
     ):
         """Ensures an error message is given when the wrong fields are supplied. This should also work for the edit method."""
-        mock_lift["unknown"] = "fake"
+        mock_lift_wrong_field = mock_lift.copy()
+        mock_lift_wrong_field["unknown"] = "fake"
         with pytest.raises(TypeError) as excinfo:
             authenticated_api_user.create_lift(
                 athlete_id=mock_data["athlete_id"],
                 competition_id=mock_data["competition_id"],
-                **mock_lift,
+                **mock_lift_wrong_field,
             )
         assert "unknown" in str(excinfo.value)
 
@@ -171,6 +172,13 @@ class TestLiftMixin:
         """Cannot create a lift if the athlete is already in the competition."""
         athlete_id = mock_data["athlete_id"]
         competition_id = mock_data["competition_id"]
+        # creating lift twice for sure
+        # when running all tests the lift gets deleted?
+        authenticated_api_user.create_lift(
+            athlete_id=athlete_id,
+            competition_id=competition_id,
+            **mock_lift,
+        )
         response = authenticated_api_user.create_lift(
             athlete_id=athlete_id,
             competition_id=competition_id,
