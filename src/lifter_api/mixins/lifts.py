@@ -145,6 +145,14 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
                 "lottery_number": int(lottery_number),
             },
         )
+        if response.status_code == 500:
+            # TODO: need to fix type checking below?
+            competition = self.get_competition(competition_id=competition_id)
+            lifts = competition["lift_set"]  # type: ignore
+            if athlete_id in (lift["athlete"] for lift in lifts):  # type: ignore
+                return {
+                    "detail": f"Error: athlete, '{athlete_id}', already in competition, '{competition_id}'"
+                }
         response.raise_for_status()
         return response.json()
 
@@ -156,7 +164,7 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
 
             Args:
                 competition_id (str): competition id
-                lift_id (int): lift id
+                lift_id (str): lift id
 
             Returns:
                 LiftDetail | DetailResponse: edited lift information and return messages if competition id is
@@ -177,11 +185,10 @@ class LiftMixin(CompetitionMixin, AthleteMixin):
 
         Args:
             competition_id (str): Competition ID.
-            lift_id (int): Lift ID.
+            lift_id (str): Lift ID.
 
         Returns:
-            DetailResponse:
-            Information about deleted lift.
+            DetailResponse: Information about deleted lift.
             Will also mention if session or competition does not exist.
         """
         response = requests.delete(

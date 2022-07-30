@@ -15,7 +15,7 @@ line-length = 79
 include = '\.pyi?%'
 
 [tool.pytest.ini_options]
-addopts = "-vv --cov=lifter_api --cov-report html"
+addopts = "-vv --cov-report html"
 testpaths = ["tests"]
 mock_use_standalone_module = true
 

@@ -138,7 +138,7 @@ class TestLiftMixin:
         authenticated_api_user,
         mock_lift,
     ):
-        """Wrong IDs."""
+        """Create lift with the wrong IDs."""
         athlete_id = "WrongAthleteID"
         competition_id = "WrongCompetitionID"
         response = authenticated_api_user.create_lift(
@@ -161,3 +161,22 @@ class TestLiftMixin:
                 **mock_lift,
             )
         assert "unknown" in str(excinfo.value)
+
+    def test_create_lift_already_exists(
+        self,
+        authenticated_api_user,
+        mock_lift,
+        mock_data,
+    ):
+        """Cannot create a lift if the athlete is already in the competition."""
+        athlete_id = mock_data["athlete_id"]
+        competition_id = mock_data["competition_id"]
+        response = authenticated_api_user.create_lift(
+            athlete_id=athlete_id,
+            competition_id=competition_id,
+            **mock_lift,
+        )
+        assert (
+            response.get("detail")
+            == f"Error: athlete, '{athlete_id}', already in competition, '{competition_id}'"
+        )

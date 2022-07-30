@@ -199,6 +199,15 @@ def test_verify_date(test_input, expected):
             ),
             id="Incorrect outcome",
         ),
+        pytest.param(
+            {
+                "lift_1": ("NOLIFT", 88),
+                "lift_2": ("NOLIFT", 88),
+                "lift_3": ("NOLIFT", 88),
+            },
+            (does_not_raise(), None),
+            id="Valid. All no lifts #2",
+        ),
     ],
 )
 def test_verify_lifts(test_input, expected):

@@ -30,7 +30,7 @@ class CompetitionMixin(BaseMixin):
 
     def get_competition(
         self, competition_id: str
-    ) -> CompetitionDetail | DetailResponse:
+    ) -> DetailResponse | CompetitionDetail:
         """Get detail of an existing competition and it also includes session and lifts.
 
         Args:

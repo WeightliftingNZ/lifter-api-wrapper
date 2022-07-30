@@ -7,7 +7,7 @@ from functools import wraps
 def _check_id(func: Callable) -> Callable:
     """Check competition ID - Decorator.
 
-    An incorrect idea will return a dictionary containing the key "detail".
+    An incorrect id will return a dictionary containing the key "detail".
     """
 
     @wraps(func)
@@ -30,7 +30,7 @@ def _check_id(func: Callable) -> Callable:
         lift_id = kwargs.get("lift_id")
         if lift_id and func.__name__ != "get_lift":
             not_exists["lift"] = self.get_lift(
-                lift_id=lift_id, competition_id=competition_id
+                competition_id=competition_id, lift_id=lift_id
             ).get("detail", False)
 
         cleaned_not_exists = list(not_exists.values())
