@@ -20,6 +20,12 @@ repos:
       - id: sort-simple-yaml
       - id: check-yaml
 
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.1
+    hooks:
+      - id: pycln
+        args: [--all]
+
   - repo: http://github.com/asottile/setup-cfg-fmt
     rev: v1.20.2
     hooks:
