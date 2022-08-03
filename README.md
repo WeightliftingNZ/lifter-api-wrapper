@@ -3,6 +3,11 @@
 [![Lint](https://github.com/WeightliftingNZ/lifter-api-wrapper/actions/workflows/lint.yml/badge.svg)](https://github.com/ChristchurchCityWeightlifting/lifter-api-wrapper/actions/workflows/lint.yml)
 [![Documentation Status](https://readthedocs.org/projects/lifter-api-wrapper/badge/?version=latest)](https://lifter-api-wrapper.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Latest Version](https://pypip.in/version/lifter-api-wrapper/badge.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
+[![Downloads](https://pypip.in/download/lifter-api-wrapper/badge.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
+[![Python Versions](https://pypip.in/py_versions/lifter-api-wrapper/badge.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
+[![License](https://pypip.in/license/lifter-api-wrapper/badge.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
+
 
 This is a wrapper written in python in order to access [Lifter API](https://github.com/WeightliftingNZ/lifter-api).
 
