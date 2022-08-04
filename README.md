@@ -5,7 +5,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Latest Version](https://img.shields.io/pypi/v/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
 [![Format](https://img.shields.io/pypi/format/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
-[![Python Versions](https://img.shields.io/pypi/pyverions/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
 [![Implementation](https://img.shields.io/pypi/implementation/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
 [![License](https://img.shields.io/pypi/status/lifter-api-wrapper.svg)](https://pypi.python.org/pypi/lifter-api-wrapper/)
 
