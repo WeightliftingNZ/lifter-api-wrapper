@@ -2,8 +2,8 @@
 name: Lint
 
 on:
-   - push
-   - pull_request
+  - push
+  - pull_request
 
 jobs:
   lint:
@@ -35,7 +35,7 @@ jobs:
       - id: install-dependencies
         name: Install dependencies
         run: |
-          pipenv sync --dev --python ${{ matrix.python-version }}
+          pipenv install --skip-lock --dev --python ${{ matrix.python-version }}
 
       - id: test-tox
         name: Test with tox
