@@ -5,6 +5,7 @@ import os
 
 import pytest
 import requests
+
 from lifter_api import LifterAPI
 from lifter_api.utils.defaults import VERSION
 from lifter_api.utils.helpers import load_url

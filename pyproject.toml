@@ -3,14 +3,14 @@ requires = ["setuptools >= 62.1.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lifter_api"
-version = "0.2.2"
+name = "lifter_api_wrapper"
+version = "0.2.3"
 authors = [
   { name = "Shivan Sivakumaran" },
   { email = "<shivan.sivakumaran@gmail.com>" },
 ]
 requires-python = ">=3.10"
-description = "Providing tools for optometrists."
+description = "A wrapper for Lifter API."
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "MIT" }
 keywords = ["weightlifting", "api wrapper"]
@@ -18,7 +18,6 @@ dependencies = ["requests", "rich"]
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Development Status :: 4 - Beta",
-  "Intended Audience :: Healthcare Industry",
   "Natural Language :: English",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -34,7 +33,7 @@ documentation = "https://weightliftingnz.github.io/lifter-api-wrapper"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["optom_tools*"]
+include = ["lifter_api*"]
 exclude = ["tests"]
 
 [tool.isort]
@@ -55,8 +54,8 @@ testpaths = ["tests"]
 mock_use_standalone_module = true
 
 [tool.pydocstyle]
+convention = "google"
 match = 'src(.*)\.py'
-
 
 [tool.mypy]
 mypy_path = "src"
@@ -71,5 +70,48 @@ venv = ".venv"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
+version_files = ["src/optom_tools/__init__.py", "pyproject.toml"]
 version = "0.2.3"
-tag_format = "v$version"
+tag_format = "$version"
+style = [
+  [
+    "qmark",
+    "fg:#ff9d00 bold",
+  ],
+  [
+    "question",
+    "bold",
+  ],
+  [
+    "answer",
+    "fg:#ff9d00 bold",
+  ],
+  [
+    "pointer",
+    "fg:#ff9d00 bold",
+  ],
+  [
+    "highlighted",
+    "fg:#ff9d00 bold",
+  ],
+  [
+    "selected",
+    "fg:#cc5454",
+  ],
+  [
+    "separator",
+    "fg:#cc5454",
+  ],
+  [
+    "instruction",
+    "",
+  ],
+  [
+    "text",
+    "",
+  ],
+  [
+    "disabled",
+    "fg:#858585 italic",
+  ],
+]

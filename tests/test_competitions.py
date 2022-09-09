@@ -1,6 +1,7 @@
 """Test Competition methods."""
 
 import pytest
+
 from lifter_api.utils.exceptions import TokenNotProvidedError
 
 

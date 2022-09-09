@@ -4,9 +4,10 @@ import os
 from contextlib import nullcontext as does_not_raise
 
 import pytest
+from requests.exceptions import HTTPError
+
 from lifter_api import LifterAPI
 from lifter_api.utils.exceptions import TokenNotValidError
-from requests.exceptions import HTTPError
 
 
 class TestLifterAPI:

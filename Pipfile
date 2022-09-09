@@ -5,18 +5,16 @@ name = "pypi"
 
 [packages]
 requests = "2.28.1"
-lifter-api-wrapper = {editable = true, path = "."}
-types-requests = "*"
 rich = "*"
+lifter-api-wrapper = {editable = true, path = "."}
 
 [dev-packages]
+pytest-xdist = "*"
+mkdocstrings = { extras = ["python"], version = "*" }
+mkdocs-material = "*"
 pytest = "*"
 setuptools = "*"
-tox = "*"
-sphinx = "*"
-twine = "*"
 mypy = "*"
-bump2version = "*"
 pytest-cov = "*"
 flake8 = "*"
 pytest-mock = "*"

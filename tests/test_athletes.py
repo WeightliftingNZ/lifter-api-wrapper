@@ -2,6 +2,7 @@
 from contextlib import nullcontext as does_not_raise
 
 import pytest
+
 from lifter_api.utils.exceptions import NotAllowedError, TokenNotProvidedError
 from lifter_api.utils.types import AthleteList
 

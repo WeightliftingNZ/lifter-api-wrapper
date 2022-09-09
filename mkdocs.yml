@@ -1,0 +1,30 @@
+---
+site_name: Lifter API Wrapper
+site_url: https://weightliftingnz.github.io/lifter-api-wrapper
+nav:
+  - Home: index.md
+  - API: api.md
+  - Types: types.md
+  - Development: development.md
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-schema: dark)"
+      scheme: slate
+      primary: black
+      accent: white
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+    - media: "(prefers-color-schema: light)"
+      scheme: default
+      primary: black
+      accent: light-blue
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+watch:
+  - src
+plugins:
+  - search
+  - mkdocstrings

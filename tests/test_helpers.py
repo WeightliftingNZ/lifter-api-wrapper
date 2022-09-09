@@ -2,6 +2,7 @@
 from contextlib import nullcontext as does_not_raise
 
 import pytest
+
 from lifter_api.utils.defaults import LIVE_URL, TEST_URL
 from lifter_api.utils.exceptions import (
     InvalidDateError,
