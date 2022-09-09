@@ -272,6 +272,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.find_athlete" class="md-nav__link">
+    find_athlete()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.get_athlete" class="md-nav__link">
     get_athlete()
   </a>
@@ -436,6 +443,13 @@
         <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.athletes" class="md-nav__link">
     athletes()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.find_athlete" class="md-nav__link">
+    find_athlete()
   </a>
   
 </li>
@@ -699,6 +713,124 @@
 <span class="go">}</span>
 <span class="go">Specifying a page:</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">athletes</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="lifter_api.main.LifterAPI.find_athlete" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">find_athlete</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ordering</span><span class="o">=</span><span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Search for an athlete.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>search</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Search term for athlete; this will be the athlete's                     name.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>page</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Page number for search. Defaults to 1.</p></td>
+          <td>
+                <code>1</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>ordering</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Accepts <code>last_name</code> or <code>first_name</code> on what to                     order, default to <code>last_name</code>.</p></td>
+          <td>
+                <code>&#39;last_name&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>ascending</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td><p>If the search results are ascending or                     descending, defaults to True.</p></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="lifter_api.utils.exceptions.NotAllowedError">NotAllowedError</span></code>
+          </td>
+          <td><p>The ordering was inputted incorrectly.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>AthleteList</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="lifter_api.utils.types.AthleteList" href="../types/#lifter_api.utils.types.AthleteList">AthleteList</a></code>
+          </td>
+          <td><p>Search results of athletes as well as page                     information.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+<p><strong>Examples:</strong></p>
+    <p>Typical use:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">find_athlete</span><span class="p">(</span><span class="s2">&quot;Athlete&quot;</span><span class="p">)</span>
+<span class="go"># TODO: output</span>
+</code></pre></div>
+    <p>Customising search:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">find_athlete</span><span class="p">(</span>                     <span class="n">search</span><span class="o">=</span><span class="s2">&quot;Athlete&quot;</span><span class="p">,</span>                     <span class="n">page</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>                     <span class="n">order</span><span class="o">=</span><span class="s2">&quot;first_name&quot;</span><span class="p">,</span>                     <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go"># TODO output</span>
 </code></pre></div>
 
   </div>
