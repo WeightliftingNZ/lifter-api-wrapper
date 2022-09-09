@@ -209,7 +209,7 @@ class LifterAPI:
         """Search for an athlete.
 
         Args:
-            search (str): Search term for athlete; this will be the patient's \
+            search (str): Search term for athlete; this will be the athlete's \
                     name.
             page (int): Page number for search. Defaults to 1.
             ordering (str): Accepts `last_name` or `first_name` on what to \

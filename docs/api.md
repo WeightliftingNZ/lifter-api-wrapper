@@ -4,6 +4,7 @@
     options:
       members:
         - athletes
+        - find_athlete
         - get_athlete
         - create_athlete
         - edit_athlete
