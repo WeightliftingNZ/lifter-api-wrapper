@@ -230,10 +230,7 @@ class LifterAPI:
             # TODO: output
 
             Customising search:
-            >>> api.find_athlete( \
-                    search="Athlete", \
-                    page=2, \
-                    order="first_name", \
+            >>> api.find_athlete(search="Athlete", page=2, order="first_name",
                     ascending=False)
             # TODO output
         """
