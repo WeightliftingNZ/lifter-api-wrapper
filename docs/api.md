@@ -16,6 +16,7 @@
         - delete_competition
         - lifts
         - get_lift
+        - create_lift
         - edit_lift
         - delete_lift
       show_source: false
