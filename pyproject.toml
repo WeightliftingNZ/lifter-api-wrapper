@@ -26,9 +26,9 @@ classifiers = [
 ]
 
 [project.urls]
-homepage = "https://github.com/weightliftingNZ/lifter-api-wrapper"
-repository = "https://github.com/weightliftingNZ/lifter-api-wrapper"
-changelog = "https://github.com/shivan-s/lifter-api-wrapper/blob/main/CHANGELOG.md"
+homepage = "https://github.com/WeightliftingNZ/lifter-api-wrapper"
+repository = "https://github.com/WeightliftingNZ/lifter-api-wrapper"
+changelog = "https://github.com/WeightliftingNZ/lifter-api-wrapper/blob/main/CHANGELOG.md"
 documentation = "https://weightliftingnz.github.io/lifter-api-wrapper"
 
 [tool.setuptools.packages.find]
