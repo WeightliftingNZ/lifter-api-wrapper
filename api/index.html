@@ -358,6 +358,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.create_lift" class="md-nav__link">
+    create_lift()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.edit_lift" class="md-nav__link">
     edit_lift()
   </a>
@@ -529,6 +536,13 @@
         <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.get_lift" class="md-nav__link">
     get_lift()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.create_lift" class="md-nav__link">
+    create_lift()
   </a>
   
 </li>
@@ -1702,6 +1716,316 @@
 <span class="go">        competition_id=competition_id,</span>
 <span class="go">        athlete_id=athlete_id</span>
 <span class="go">        )</span>
+</code></pre></div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="lifter_api.main.LifterAPI.create_lift" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_lift</span><span class="p">(</span><span class="n">competition_id</span><span class="p">,</span> <span class="n">athlete_id</span><span class="p">,</span> <span class="n">snatch_first</span><span class="p">,</span> <span class="n">snatch_first_weight</span><span class="p">,</span> <span class="n">snatch_second</span><span class="p">,</span> <span class="n">snatch_second_weight</span><span class="p">,</span> <span class="n">snatch_third</span><span class="p">,</span> <span class="n">snatch_third_weight</span><span class="p">,</span> <span class="n">cnj_first</span><span class="p">,</span> <span class="n">cnj_first_weight</span><span class="p">,</span> <span class="n">cnj_second</span><span class="p">,</span> <span class="n">cnj_second_weight</span><span class="p">,</span> <span class="n">cnj_third</span><span class="p">,</span> <span class="n">cnj_third_weight</span><span class="p">,</span> <span class="n">bodyweight</span><span class="p">,</span> <span class="n">weight_category</span><span class="p">,</span> <span class="n">session_number</span><span class="p">,</span> <span class="n">team</span><span class="p">,</span> <span class="n">lottery_number</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Create a lift in an existing session.</p>
+<p>The API has internal validation to ensure that an athlete cannot have                 more than one lift object associated with a competition.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>competition_id</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Competition ID.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>athlete_id</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Athlete ID.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_first</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Accepts "LIFT", "NOLIFT", "DNA".</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_first_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Weight of the lift.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_second</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Same as snatch_first.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_second_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Weight must be same or larger if</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_third</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Same idea as snatch_first.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>snatch_third_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Same as snatch_second_weight.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_first</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Follow same as snatches.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_first_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Follows as above.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_second</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Follows as above.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_second_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Follows as above.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_third</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Follows as above.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cnj_third_weight</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Follows as above.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bodyweight</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td><p>Body weight in kilograms.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>weight_category</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Appropriate weight category.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>session_number</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Session number.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>team</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Team.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>lottery_number</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Determines lift order.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="lifter_api.utils.exceptions.NotAllowedError">NotAllowedError</span></code>
+          </td>
+          <td><p>Status error.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="lifter_api.utils.types.LiftDetail" href="../types/#lifter_api.utils.types.LiftDetail">LiftDetail</a> | <a class="autorefs autorefs-internal" title="lifter_api.utils.types.DetailResponse" href="../types/#lifter_api.utils.types.DetailResponse">DetailResponse</a></code>
+          </td>
+          <td><p>LiftDetail | DetailResponse: Information about created lift.                     Will also return if athlete, session or competition does                     not exist.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+<p><strong>Examples:</strong></p>
+    <p>Typical use:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">create_lift</span><span class="p">(</span>
+<span class="go">        competition_id=&quot;123def7&quot;,</span>
+<span class="go">        athlete_id=&quot;ab345l&quot;,</span>
+<span class="go">        snatch_first=&quot;LIFT&quot;,</span>
+<span class="go">        snatch_first_weight=90,</span>
+<span class="go">        snatch_second=&quot;NOLIFT&quot;,</span>
+<span class="go">        snatch_second_weight=95,</span>
+<span class="go">        snatch_third=&quot;LIFT&quot;,</span>
+<span class="go">        snatch_third_weight=95,</span>
+<span class="go">        cnj_first=&quot;LIFT&quot;,</span>
+<span class="go">        cnj_first_weight=120,</span>
+<span class="go">        cnj_second=&quot;DNA&quot;,</span>
+<span class="go">        cnj_second_weight=0,</span>
+<span class="go">        cnj_third=&quot;DNA&quot;,</span>
+<span class="go">        cnj_third_weight=&quot;DNA&quot;,</span>
+<span class="go">        bodyweight=88.5,</span>
+<span class="go">        weight_category=&quot;M89&quot;,</span>
+<span class="go">        session_number=1,</span>
+<span class="go">        team=&quot;TEAM&quot;,</span>
+<span class="go">        lottery_number=1,</span>
+<span class="go">        )</span>
+<span class="go"># TODO: output</span>
+</code></pre></div>
+    <p>A handy tip is to unpack dictionaries:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">lift</span> <span class="o">=</span> <span class="p">{</span>
+<span class="go">        &quot;competition_id&quot;: &quot;123def7&quot;,</span>
+<span class="go">        &quot;athlete_id&quot;: &quot;ab345l&quot;,</span>
+<span class="go">        &quot;snatch_first&quot;: &quot;LIFT&quot;,</span>
+<span class="go">        &quot;snatch_first_weight&quot;: 90,</span>
+<span class="go">        &quot;snatch_second&quot;: &quot;NOLIFT&quot;,</span>
+<span class="go">        &quot;snatch_second_weight&quot;: 95,</span>
+<span class="go">        &quot;snatch_third&quot;: &quot;LIFT&quot;,</span>
+<span class="go">        &quot;snatch_third_weight&quot;: 95,</span>
+<span class="go">        &quot;cnj_first&quot;: &quot;LIFT&quot;,</span>
+<span class="go">        &quot;cnj_first_weight&quot;: 120,</span>
+<span class="go">        &quot;cnj_second&quot;: &quot;DNA&quot;,</span>
+<span class="go">        &quot;cnj_second_weight&quot;: 0,</span>
+<span class="go">        &quot;cnj_third&quot;: &quot;DNA&quot;,</span>
+<span class="go">        &quot;cnj_third_weight&quot;: &quot;DNA&quot;,</span>
+<span class="go">        &quot;bodyweight&quot;: 88.5,</span>
+<span class="go">        &quot;weight_category&quot;: &quot;M89&quot;,</span>
+<span class="go">        &quot;session_number&quot;: 1,</span>
+<span class="go">        &quot;team&quot;: &quot;TEAM&quot;,</span>
+<span class="go">        &quot;lottery_number&quot;: 1,</span>
+<span class="go">        }</span>
+<span class="go">api.create_lift(**lift)</span>
+<span class="go"># TODO: output</span>
 </code></pre></div>
 
   </div>
