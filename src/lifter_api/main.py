@@ -711,7 +711,7 @@ class LifterAPI:
                 "lottery_number": int(lottery_number),
             },
         )
-        if response.status_code == 500:
+        if response.status_code == 400:
             # TODO: need to fix type checking below?
             competition = self.get_competition(competition_id=competition_id)
             lifts = competition["lift_set"]  # type: ignore
