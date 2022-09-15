@@ -72,4 +72,4 @@ This will run a server and allow you to run tests for this wrapper.
 
 ## Contribution
 
-[Please have checkout CONTRIBUTING.md](https://github.com/WeightliftingNZ/lifter-api-wrapper/blob/main/CONTRIBUTING.md)
+[Please checkout CONTRIBUTING.md](https://github.com/WeightliftingNZ/lifter-api-wrapper/blob/main/CONTRIBUTING.md) if you interested in contributing.
