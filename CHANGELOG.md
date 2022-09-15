@@ -1,3 +1,19 @@
+## 0.3.1 (2022-09-15)
+
+### Fix
+
+- fixing adding lift already exist message
+
+## 0.3.0 (2022-09-09)
+
+### Feat
+
+- new things
+
+### Refactor
+
+- improving doc generation
+
 ## v0.2.3 (2022-09-09)
 
 ## v0.2.2 (2022-07-23)

@@ -3,4 +3,4 @@ from .main import LifterAPI
 
 __all__ = ["LifterAPI"]
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
