@@ -35,7 +35,11 @@ def _check_id(func: Callable) -> Callable:
 
         cleaned_not_exists = list(not_exists.values())
         if any(cleaned_not_exists):
-            return {"detail": " ".join(cleaned_not_exists)}
+            return {
+                "detail": " ".join(
+                    [item for item in cleaned_not_exists if item]
+                )
+            }
 
         return func(self, *args, **kwargs)
 

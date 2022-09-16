@@ -134,7 +134,7 @@ class TestLiftMixin:
             == f"Lift ID: '{lift_id}' does not exist."
         )
 
-    def test_lifts_wrong_ids(
+    def test_create_lift_wrong_ids(
         self,
         authenticated_api_user,
         mock_lift,
@@ -148,6 +148,42 @@ class TestLiftMixin:
         assert (
             response.get("detail")
             == f"Athlete ID: '{athlete_id}' does not exist. Competition ID: '{competition_id}' does not exist."
+        )
+
+    def test_create_lift_wrong_competition_id(
+        self,
+        authenticated_api_user,
+        mock_lift,
+        mock_data,
+    ):
+        """Create a lift with a wrong competition id."""
+        competition_id = "Wrong"
+        correct_athlete_response = authenticated_api_user.create_lift(
+            athlete_id=mock_data["athlete_id"],
+            competition_id=competition_id,
+            **mock_lift,
+        )
+        assert (
+            correct_athlete_response.get("detail")
+            == f"Competition ID: '{competition_id}' does not exist."
+        )
+
+    def test_create_lift_wrong_athlete_id(
+        self,
+        authenticated_api_user,
+        mock_lift,
+        mock_data,
+    ):
+        """Create a lift with a wrong athlete id."""
+        athlete_id = "Wrong"
+        correct_athlete_response = authenticated_api_user.create_lift(
+            athlete_id=athlete_id,
+            competition_id=mock_data["competition_id"],
+            **mock_lift,
+        )
+        assert (
+            correct_athlete_response.get("detail")
+            == f"Athlete ID: '{athlete_id}' does not exist."
         )
 
     def test_create_lift_authenticated_wrong_fields(
