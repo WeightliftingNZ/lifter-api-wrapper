@@ -1,5 +1,6 @@
 """Test for helper functions."""
 from contextlib import nullcontext as does_not_raise
+from datetime import datetime
 
 import pytest
 
@@ -114,7 +115,14 @@ def test_verify_edit_kwargs(test_input, expected):
 @pytest.mark.parametrize(
     "test_input,expected",
     [
-        pytest.param("2022-01-12", (does_not_raise(), None), id="Normal date"),
+        pytest.param(
+            "2022-01-12", (does_not_raise(), None), id="Normal date as string"
+        ),
+        pytest.param(
+            datetime(2022, 1, 1, 10, 10, 10),
+            (does_not_raise(), None),
+            id="Normal date, datetime",
+        ),
         pytest.param(
             "2022-13-32",
             (

@@ -1,21 +1,37 @@
 """Contains all the fixtures and test cases."""
 
-import logging
 import os
+import random
+from datetime import datetime, timedelta
 
 import pytest
 import requests
+from faker import Faker
 
 from lifter_api import LifterAPI
 from lifter_api.utils.defaults import VERSION
 from lifter_api.utils.helpers import load_url
+from lifter_api.utils.logging import log
 
 URL = load_url()
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format=" %(asctime)s - %(levelname)s - %(message)s",
-)
+
+@pytest.fixture(scope="session")
+def faker():
+    """Faker instance."""
+    return Faker()
+
+
+@pytest.fixture(scope="session")
+def faker_session_locale():
+    """Set faker locale."""
+    return ["en_NZ"]
+
+
+@pytest.fixture(scope="session")
+def faker_seed():
+    """Set faker random seed."""
+    return 42
 
 
 @pytest.fixture(scope="class")
@@ -37,33 +53,37 @@ def authenticated_api_user():
 
 
 @pytest.fixture(scope="class")
-def mock_athlete():
+def mock_athlete(faker):
     """Mock athlete."""
     athlete = {
-        "first_name": "Test",
-        "last_name": "USER",
-        "yearborn": 1900,
+        "first_name": faker.first_name(),
+        "last_name": faker.last_name(),
+        "yearborn": faker.date_of_birth().year,
     }
     return athlete
 
 
 @pytest.fixture(scope="class")
-def mock_altered_athlete():
+def mock_altered_athlete(faker):
     """To test editing athlete."""
     change = {
-        "yearborn": 1901,
+        "yearborn": faker.date_of_birth().year,
     }
     return change
 
 
 @pytest.fixture(scope="class")
-def mock_competition():
+def mock_competition(faker):
     """Mock competition."""
+    date_start = faker.date_between(
+        start_date=datetime(2019, 1, 1), end_date=datetime.now()
+    )
+    date_end = date_start + timedelta(days=random.randint(0, 3))
     competition = {
-        "date_start": "2022-03-05",
-        "date_end": "2022-03-06",
-        "location": "Test Location",
-        "name": "Test Competition Name",
+        "date_start": str(date_start)[:10],
+        "date_end": str(date_end)[:10],
+        "location": faker.company(),
+        "name": f"Competition {faker.color_name()}",
     }
     return competition
 
@@ -147,7 +167,7 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
         competitions_response["next"], pretest_competitions
     )
 
-    logging.debug("=== Verifying Token ===")
+    log.debug("=== Verifying Token ===")
 
     def _verify_access_token():
         """Verify token."""
@@ -174,11 +194,11 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
                     message="Token is not valid. Please supply a valid refresh token."
                 )
             access_token = response.json()["access"]
-        logging.debug("...Token verfied")
+        log.debug("...Token verfied")
         return access_token
 
     # set up
-    logging.info("===Mock Data Set Up===")
+    log.info("===Mock Data Set Up===")
     athlete = requests.post(
         f"{URL}/{VERSION}/athletes",
         headers={"authorization": f"Bearer {_obtain_access_token()}"},
@@ -203,7 +223,7 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
     mock_lift.pop("athlete", None)
     mock_lift.pop("competition", None)
 
-    logging.info("...Set Up completed.")
+    log.info("...Set Up completed.")
     _mocked_data = {
         "athlete_id": athlete["reference_id"],
         "competition_id": competition["reference_id"],
@@ -245,7 +265,7 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
     # tear down n.b. lift should be deleted if competitions and athletes are
     # deleted to
     # no .json() on requests.delete()
-    logging.info("===Mock Data Tear Down Started===")
+    log.info("===Mock Data Tear Down Started===")
     for athlete in new_athletes:
         requests.delete(
             f"{URL}/{VERSION}/athletes/{athlete}",
@@ -257,4 +277,4 @@ def mock_data(mock_athlete, mock_competition, mock_lift):
             f"{URL}/{VERSION}/competitions/{competition}",
             headers={"authorization": f"Bearer {_obtain_access_token()}"},
         )
-    logging.info("Tear down complete")
+    log.info("Tear down complete")

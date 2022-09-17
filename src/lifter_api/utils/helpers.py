@@ -59,11 +59,11 @@ def verify_edit_kwargs(
         raise MissingOrExtraValuesError(message=f"{unknown_keys=}.")
 
 
-def verify_date(input_date: str) -> str:
+def verify_date(input_date: str | datetime) -> str:
     """Verify date, ensuring YYYY-MM-DD (e.g. 2022-03-26).
 
     Args:
-        input_date (str): date input.
+        input_date (str | datetime): date input.
 
     Raises:
         InvalidDateError: Exception for incorrect date is thrown.
@@ -71,6 +71,8 @@ def verify_date(input_date: str) -> str:
     Returns:
         bool: True is returned if the date is correct.
     """
+    if isinstance(input_date, datetime):
+        return str(input_date)[:10]
     try:
         datetime.strptime(str(input_date), "%Y-%m-%d")
     except ValueError as error:
