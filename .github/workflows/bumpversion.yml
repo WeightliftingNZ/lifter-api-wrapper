@@ -32,3 +32,30 @@ jobs:
           tag_name: ${{ env.REVISION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: slack-release-nofication
+        uses: slackapi/slack-github-action@v1.22.0
+        with:
+          channel-id: "#releases"
+          payload: |
+            {
+              "text": "## `lifter-api-wrapper` Release",
+              "attachments": [
+                {
+                  "color": "28a745",
+                  "fields": [
+                    {
+                      "title": ${{ env.REVISION }},
+                      "short": false,
+                      "value": "https://pypi.org/project/lifter-api-wrapper/"
+                    },
+                    {
+                      "title": Changelog,
+                      "short": false,
+                      "value": "https://github.com/WeightliftingNZ/lifter-api-wrapper/blob/main/CHANGELOG.md"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

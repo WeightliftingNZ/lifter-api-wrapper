@@ -29,6 +29,29 @@ class TestCompetitionMixin:
         )
         assert competition_details["name"] == mock_competition["name"]
 
+    def test_find_competitions_by_search(
+        self,
+        unauthenticated_api_user,
+        mock_competition,
+    ):
+        """Able to find competitions by search."""
+        competition_search = unauthenticated_api_user.find_competition(
+            search=mock_competition["name"]
+        )
+        assert competition_search["count"] > 1
+
+    def test_find_competitions_by_date(
+        self,
+        unauthenticated_api_user,
+        mock_competition,
+    ):
+        """Able to find competition by date."""
+        competition_search = unauthenticated_api_user.find_competition(
+            date_before=mock_competition["date_start"],
+            date_after=mock_competition["date_start"],
+        )
+        assert competition_search["count"] == 1
+
     def test_create_competition_unauthenticated(
         self, unauthenticated_api_user, mock_competition
     ):

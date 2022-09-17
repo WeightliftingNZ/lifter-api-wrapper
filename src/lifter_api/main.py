@@ -1,6 +1,10 @@
 """Lifter API Wrapper main module."""
 
+from datetime import datetime
+from typing import Literal
+
 import requests
+from rich import pretty
 
 from .utils.decorators import _check_id
 from .utils.defaults import (
@@ -28,6 +32,9 @@ from .utils.types import (
     DetailResponse,
     LiftDetail,
 )
+
+# make output nice to look at
+pretty.install()
 
 
 class LifterAPI:
@@ -203,7 +210,7 @@ class LifterAPI:
         self,
         search: str,
         page: int = 1,
-        ordering: str = "last_name",
+        ordering: Literal["first_name", "last_name"] = "last_name",
         ascending: bool = True,
     ) -> AthleteList:
         """Search for an athlete.
@@ -398,10 +405,61 @@ class LifterAPI:
         response.raise_for_status()
         return response.json()
 
+    def find_competition(
+        self,
+        search: str = "",
+        page: int = 1,
+        date_after: str | datetime = "",
+        date_before: str | datetime | None = None,
+        order_by_date: bool = False,
+        ascending: bool = False,
+    ):
+        """Find a competition by name, location search and/or by date.
+
+        Args:
+            search (str): Search parameter for location and/or name. Defaults \
+                    to ""
+            page (int): Page of number for search.
+            date_after (str | datetime): Search after date.
+            date_before (str | datetime): Search before date. If left as \
+                    `None`, it will default to today's date.
+            order_by_date (bool): To order by date.
+            ascending (bool): Ascending order for date search.
+
+        Returns:
+            The competitions that have been found.
+
+        Examples:
+            Typical use:
+            >>> api.find_competition(search="Competition")
+            # TODO: output
+
+            Customising search:
+            >>> api.find_competition(search="Competition", page=3,
+                    date_start="2022-09-17")
+            # TODO: output
+        """
+        if date_before is None:
+            date_before = datetime.now()
+
+        ordering = ""
+        if order_by_date:
+            ordering = "date_start"
+
+        if ordering == "":
+            # prevents "?ordering=-" on query string
+            ascending = True
+
+        response = requests.get(
+            f"{self._url}/{self._version}/competitions?ordering={'' if ascending else '-'}{ordering}&page={page}&search={search}&date_start_before={str(date_before)[:10]}&date_start_after={str(date_after)[:10]}"
+        )
+        response.raise_for_status()
+        return response.json()
+
     def create_competition(
         self,
-        date_start: str,  # date format YYYY-MM-DD
-        date_end: str,
+        date_start: str | datetime,  # date format YYYY-MM-DD
+        date_end: str | datetime,
         location: str,
         name: str,
     ) -> CompetitionDetail:

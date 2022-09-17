@@ -11,6 +11,7 @@
         - delete_athlete
         - competitions
         - get_competition
+        - find_competition
         - create_competition
         - edit_competition
         - delete_competition

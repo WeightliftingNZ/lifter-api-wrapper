@@ -21,6 +21,7 @@ pytest-mock = "*"
 mock = "*"
 pytest-lazy-fixture = "*"
 types-requests = "*"
+faker = "*"
 
 [requires]
 python_version = "3.10"
