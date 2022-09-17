@@ -1,3 +1,9 @@
+## 0.4.0 (2022-09-17)
+
+### Feat
+
+- **LifterAPI**: providing find competition feature
+
 ## 0.3.3 (2022-09-16)
 
 ### Refactor

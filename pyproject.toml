@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lifter_api_wrapper"
-version = "0.3.3"
+version = "0.4.0"
 authors = [
   { name = "Shivan Sivakumaran" },
   { email = "<shivan.sivakumaran@gmail.com>" },
@@ -71,7 +71,7 @@ venv = ".venv"
 [tool.commitizen]
 name = "cz_conventional_commits"
 version_files = ["src/lifter_api/__init__.py", "pyproject.toml"]
-version = "0.3.3"
+version = "0.4.0"
 tag_format = "$version"
 style = [
   [
