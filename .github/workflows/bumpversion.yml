@@ -44,12 +44,12 @@ jobs:
                   "color": "28a745",
                   "fields": [
                     {
-                      "title": ${{ env.REVISION }},
+                      "title": "${{ env.REVISION }}",
                       "short": false,
                       "value": "https://pypi.org/project/lifter-api-wrapper/"
                     },
                     {
-                      "title": Changelog,
+                      "title": "Changelog",
                       "short": false,
                       "value": "https://github.com/WeightliftingNZ/lifter-api-wrapper/blob/main/CHANGELOG.md"
                     }
