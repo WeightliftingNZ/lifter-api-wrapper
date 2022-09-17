@@ -323,6 +323,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.find_competition" class="md-nav__link">
+    find_competition()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.create_competition" class="md-nav__link">
     create_competition()
   </a>
@@ -501,6 +508,13 @@
         <li class="md-nav__item">
   <a href="#lifter_api.main.LifterAPI.get_competition" class="md-nav__link">
     get_competition()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifter_api.main.LifterAPI.find_competition" class="md-nav__link">
+    find_competition()
   </a>
   
 </li>
@@ -1293,6 +1307,126 @@
     <p>Typical use:</p>
     <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">competition_id</span> <span class="o">=</span> <span class="s2">&quot;1b3de7&quot;</span> <span class="c1"># hashid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">get_competition</span><span class="p">(</span><span class="n">competition_id</span><span class="o">=</span><span class="n">competition_id</span><span class="p">)</span>
+<span class="go"># TODO: output</span>
+</code></pre></div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="lifter_api.main.LifterAPI.find_competition" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">find_competition</span><span class="p">(</span><span class="n">search</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">date_after</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">date_before</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order_by_date</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find a competition by name, location search and/or by date.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>search</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Search parameter for location and/or name. Defaults                     to ""</p></td>
+          <td>
+                <code>&#39;&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>page</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>Page of number for search.</p></td>
+          <td>
+                <code>1</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>date_after</code></td>
+          <td>
+                <code>str | <span title="datetime.datetime">datetime</span></code>
+          </td>
+          <td><p>Search after date.</p></td>
+          <td>
+                <code>&#39;&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>date_before</code></td>
+          <td>
+                <code>str | <span title="datetime.datetime">datetime</span></code>
+          </td>
+          <td><p>Search before date. If left as                     <code>None</code>, it will default to today's date.</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>order_by_date</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td><p>To order by date.</p></td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>ascending</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td><p>Ascending order for date search.</p></td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+          </td>
+          <td><p>The competitions that have been found.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+<p><strong>Examples:</strong></p>
+    <p>Typical use:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">find_competition</span><span class="p">(</span><span class="n">search</span><span class="o">=</span><span class="s2">&quot;Competition&quot;</span><span class="p">)</span>
+<span class="go"># TODO: output</span>
+</code></pre></div>
+    <p>Customising search:</p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">find_competition</span><span class="p">(</span><span class="n">search</span><span class="o">=</span><span class="s2">&quot;Competition&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="go">        date_start=&quot;2022-09-17&quot;)</span>
 <span class="go"># TODO: output</span>
 </code></pre></div>
 
